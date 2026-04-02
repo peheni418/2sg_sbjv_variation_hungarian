@@ -1,1 +1,3 @@
-van ez a script amit tegnap-ma rakosgattam, a parquet freq fileban turkáltam, amit nemtok ide feltölteni, de i guess nem is kell, mert neked megvan!
+variation.R arra van, hogy letisztáztam az adatokat. 
+imperative table: minden felszólító pár
+ep_real: jelenidejű, kijelentő módú alakok, csak azok, amiknek egy xpostagjához van 2 form, 1sg kirakva, mert az ikes variáció, nem VC-CC vairáció
