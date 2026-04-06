@@ -62,3 +62,39 @@ This file contains one row per lemma — 52 rows total. It stores higher-level l
 | **Focus** | Surface form properties (length, freq, syllables) | Lemma-level &amp; paradigm-level properties |
 | **# rows** | ~104 (2 forms × 52 lemmas) | 52 (one per lemma) |
 | **Use** | Describing the actual stimuli | Describing the lemmas behind the stimuli |
+
+---
+
+## Scripts
+
+### `subj_variation_stimuli.R` — stimulus list construction
+
+This is the full pipeline that produces the two TSV data files. It:
+
+1. Loads a corpus frequency parquet file and filters to common, valid verbs
+2. Extracts **definite subjunctive 2sg** long/short form pairs (e.g. `nézd` / `nézzed`)
+3. Joins with a separately-provided lemma metadata table
+4. Homogenises the stimulus list by filtering near the median on 3 dimensions: lemma frequency, 3sg indicative log odds, and long/short subjunctive log odds
+5. Cleans up labels and removes edge cases
+6. Writes `stim_wordform_list.tsv` and `stim_lemma_metadata.tsv`
+
+### `variation.R` — epenthesis variation exploration
+
+A separate exploratory script on a different linguistic phenomenon. It:
+
+1. Loads the same corpus frequency parquet
+2. Loads a separate epenthesis pairs file (`epenthesis_pairs_webcorpus2.tsv`)
+3. Filters to verbs that show epenthesis alternation
+4. Looks at **present tense indicative** forms across all persons/numbers
+5. Keeps only paradigm cells where a lemma has two competing forms
+6. Does not write any output — appears unfinished/exploratory
+
+### Summary
+
+| | `subj_variation_stimuli.R` | `variation.R` |
+|---|---|---|
+| **Purpose** | Build the final stimulus lists | Explore epenthesis variation |
+| **Phenomenon** | Subjunctive long/short alternation (2sg Def) | Epenthesis alternation (present indicative) |
+| **Input** | Corpus parquet + lemma metadata list | Corpus parquet + epenthesis pairs file |
+| **Output** | `stim_wordform_list.tsv`, `stim_lemma_metadata.tsv` | None (exploratory) |
+| **Status** | Complete pipeline | Appears unfinished |
