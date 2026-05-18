@@ -2,7 +2,8 @@ library(tidyverse)
 
 # Read and combine all CSV files from data folder
 data <- list.files("C:/Users/Pokk Heni/Documents/Péhádédoktoriphd/2025_26_elso_ev/toldalekos_kisi/masodik_etikus_verzio/elemzes/data", pattern = "\\.csv$", full.names = TRUE) %>%
-  map_df(read.csv) %>%
+  map_df(~read.csv(.x) %>% 
+           mutate(participant = as.character(participant))) %>%
   select(participant, key_resp_5.keys, key_resp_5.rt, primeHeni, targetHeni, stim_type)
 
 
@@ -29,6 +30,7 @@ bad_participants <- data %>%
 # Remove bad participants
 data <- data %>%
   filter(!(participant %in% bad_participants))
+
 
 # Determine harmony class based on target verb ending
 data <- data %>%
@@ -67,11 +69,20 @@ data <- data %>%
     )
   )
 
+
+
+
 # Calculate average reaction time per word per pair_type
 data_summary <- data %>%
   filter(!is.na(pair_type)) %>%
   group_by(pair_type, targetHeni) %>%
   summarise(mean_rt = mean(key_resp_5.rt), .groups = "drop")
+
+# Define the order you want
+pair_order <- c("back_cell", "front_cell", "back_form", "front_form")
+
+# Convert pair_type to a factor with the specified order
+data_summary$pair_type <- factor(data_summary$pair_type, levels = pair_order)
 
 # Create labels mapping
 pair_labels <- c(
@@ -90,6 +101,30 @@ ggplot(data_summary, aes(x = pair_type, y = mean_rt)) +
   labs(
     x = "Pair Type",
     y = "Mean Reaction Time (s)",
-    title = "Average Reaction Times by Category"
+    title = "Average Rection Times per Category"
   ) +
   theme_minimal()
+
+
+
+## Participant plot 
+
+participant_summary <- data %>%
+  filter(!is.na(pair_type)) %>%
+  group_by(participant, pair_type) %>%
+  summarise(mean_rt = mean(key_resp_5.rt), .groups = "drop")
+
+
+
+ggplot(participant_summary, aes(x = pair_type, y = mean_rt)) +
+  geom_violin(fill = "lightblue", alpha = 0.7) +
+  geom_jitter(width = 0.2, alpha = 0.5, size = 3) +
+  geom_boxplot(width = 0.2, fill = "white", alpha = 0.7) +
+  scale_x_discrete(labels = pair_labels) +
+  labs(
+    x = "Pair Type",
+    y = "Mean Reaction Time (s)",
+    title = "Overall Average Reaction Times per Participant by Pair Type"
+  ) +
+  theme_minimal()
+
