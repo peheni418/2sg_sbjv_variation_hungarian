@@ -1,9 +1,20 @@
+library(here)
 library(tidyverse)
 
 # Read and combine all CSV files from data folder
-data <- list.files("C:/Users/Pokk Heni/Documents/Péhádédoktoriphd/2025_26_elso_ev/toldalekos_kisi/masodik_etikus_verzio/elemzes/data", pattern = "\\.csv$", full.names = TRUE) %>%
-  map_df(~read.csv(.x) %>% 
-           mutate(participant = as.character(participant))) %>%
+
+data <- list.files(
+  here("raw_data"),
+  pattern = "^[0-9]{6}_priming\\.csv$",
+  full.names = TRUE
+) %>%
+  map_df(~{
+    df <- read.csv(.x)
+    df$participant <- stringr::str_extract(basename(.x), "^[0-9]{6}")
+    df
+  })
+
+data <- data %>%
   select(participant, key_resp_5.keys, key_resp_5.rt, primeHeni, targetHeni, stim_type)
 
 
@@ -105,26 +116,5 @@ ggplot(data_summary, aes(x = pair_type, y = mean_rt)) +
   ) +
   theme_minimal()
 
-
-
-## Participant plot 
-
-participant_summary <- data %>%
-  filter(!is.na(pair_type)) %>%
-  group_by(participant, pair_type) %>%
-  summarise(mean_rt = mean(key_resp_5.rt), .groups = "drop")
-
-
-
-ggplot(participant_summary, aes(x = pair_type, y = mean_rt)) +
-  geom_violin(fill = "lightblue", alpha = 0.7) +
-  geom_jitter(width = 0.2, alpha = 0.5, size = 3) +
-  geom_boxplot(width = 0.2, fill = "white", alpha = 0.7) +
-  scale_x_discrete(labels = pair_labels) +
-  labs(
-    x = "Pair Type",
-    y = "Mean Reaction Time (s)",
-    title = "Overall Average Reaction Times per Participant by Pair Type"
-  ) +
-  theme_minimal()
+write.csv(data, "clean_data")
 
