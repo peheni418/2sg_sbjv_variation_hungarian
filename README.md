@@ -1,217 +1,125 @@
-This script filters and samples Hungarian verb lemmas in the 2nd person singular subjunctive form (`2sg.sbjv`) based on three linguistic/statistical criteria:
+# Morphological Priming in Hungarian
 
-1. **Lemma log frequency** (`llfpm10`) — how common the lemma is
-2. **Definiteness log odds** (`log_odds_3sg_ind`) — the ratio of definite vs. indefinite forms in the 3sg indicative
-3. **Long/short subjunctive log odds** (`long_short_sbjv_log_odds`) — the ratio of long vs. short subjunctive forms
+This project investigates morphological priming effects in Hungarian, examining how different verb forms affect processing speed and accuracy in a lexical decision task.
 
-The goal is to identify a balanced, well-distributed set of stimuli across **stem harmony** (front vs. back vowel) and **lemma length** (monosyllabic vs. polysyllabic), suitable for use in a priming experiment.
+## Project Structure
 
----
-
-### 1. Load Libraries
-
-```r
-library(arrow)
-library(parquetize)
-library(tidyverse)
-library(dplyr)
-library(stringr)
-library(glue)
-library(ggplot2)
+```
+morphological_priming_hungarian/
+├── raw_data/                    # All participant results from the experiment
+├── data_cleaning/               # Data cleaning process and output
+│   ├── data_cleaning.R          # Script to process raw data
+│   └── clean_data               # Cleaned dataset (output)
+├── analysis_script.R            # Statistical analysis and visualizations
+└── README.md                    # This file
 ```
 
+## Raw Data
 
-### 2. Pre-filter the Data
+The `raw_data/` folder contains individual CSV files from each participant. These files are generated from the PsychoPy experiment and follow the naming convention: `XXXXXX_priming.csv` where `XXXXXX` is the participant ID.
 
-```r
-second_sg_sbjv <- read_tsv("https://raw.githubusercontent.com/peheni418/morphological_priming_hungarian/main/2sg.sbjv%20-%20forms.tsv") %>%
-  filter(llfpm10 > 2) %>%
-  filter(!str_detect(subj_2nd, "indef"))
-```
+Raw data includes:
+- Participant responses (key presses)
+- Reaction times
+- Prime verb forms
+- Target verb forms
+- Stimulus types (target or distractor)
 
-- **`read_tsv(...)`** — loads the tab-separated data file from GitHub
-- **`filter(llfpm10 > 2)`** — keeps only lemmas with a log frequency above 2, removing very rare words
-- **`filter(!str_detect(subj_2nd, "indef"))`** — removes indefinite subjunctive forms, keeping only definite ones
+The complete experiment structure and additional documentation can be found in the GitLab repository: https://gitlab.pavlovia.org/peheni/variation2sg_priming_2026
 
----
+## Data Cleaning Process
 
-### 3. Remove Missing Values
+The `data_cleaning/data_cleaning.R` script processes raw participant data and produces a single cleaned dataset. 
 
-```r
-second_sg_sbjv <- second_sg_sbjv %>%
-  filter(!is.na(llfpm10) & !is.na(log_odds_3sg_ind) & !is.na(long_short_sbjv_log_odds))
-```
+### Cleaning Steps
 
-Removes any rows where any of the three key variables are missing (`NA`). This ensures the filtering and median calculations below are based on complete data only.
+1. **Load and Combine Files**: Reads all participant CSV files from the `raw_data/` folder and combines them into one dataset, extracting participant IDs from filenames
 
----
+2. **Select Relevant Columns**: Keeps only:
+   - `participant` — participant ID
+   - `key_resp_5.keys` — key pressed (f or j)
+   - `key_resp_5.rt` — reaction time in seconds
+   - `primeHeni` — prime verb form
+   - `targetHeni` — target verb form
+   - `stim_type` — stimulus type
 
-### 4. Calculate Medians
+3. **Remove Missing Data**: Filters out rows with missing values in key columns
 
-```r
-median_llfpm10 <- median(second_sg_sbjv$llfpm10, na.rm = TRUE)
-median_log_odds_3sg_ind <- median(second_sg_sbjv$log_odds_3sg_ind, na.rm = TRUE)
-median_long_short_sbjv_log_odds <- median(second_sg_sbjv$long_short_sbjv_log_odds, na.rm = TRUE)
-```
+4. **Remove Outliers**: Excludes reaction times above 4 seconds
 
-Computes the **median** of each of the three variables. The medians serve as reference points for the filtering step below — items that are too close to or too far from the median on each variable will be excluded.
+5. **Exclude Participants with High Error Rates**: Removes participants with error rates above 50% (identifying participants who:
+   - Pressed "f" for targets and "j" for distractors correctly)
 
----
+6. **Determine Harmony Class**: Creates a `harmony_class` column based on verb ending:
+   - Front vowel harmony: target verb ends with "i"
+   - Back vowel harmony: all other cases
+   - Extends harmony class to primes based on the targets they appear with
 
-### 5. Threshold-Based Filtering Loop
+7. **Create Pair Types**: Categorizes each target into one of four pair types:
+   - `back_cell` — back harmony target ending with "d"
+   - `back_form` — back harmony target not ending with "d"
+   - `front_cell` — front harmony target ending with "d"
+   - `front_form` — front harmony target not ending with "d"
 
-```r
-for (threshold in seq(0.1, 2, 0.1)) {
-  second_sg_sbjv_piped <- second_sg_sbjv %>%
-    filter(abs(llfpm10 - median_llfpm10) > threshold * 0.2 &
-             abs(llfpm10 - median_llfpm10) < threshold * 1.2) %>%
-    filter(abs(long_short_sbjv_log_odds - median_long_short_sbjv_log_odds) > threshold * 0.2 &
-             abs(long_short_sbjv_log_odds - median_long_short_sbjv_log_odds) < threshold * 8) %>%
-    filter(abs(log_odds_3sg_ind - median_log_odds_3sg_ind) < threshold * 1.0)
+8. **Summary Statistics**: Calculates mean reaction times per pair type and target
 
-  cat("Threshold", threshold, "->", nrow(second_sg_sbjv_piped), "rows\n")
-}
-```
+### Output
 
-This loop tests **20 different threshold levels** (from 0.1 to 2.0, in steps of 0.1) and reports how many rows survive each threshold setting. For each threshold:
+The cleaned dataset is saved as `data_cleaning/clean_data` and contains:
+- All participant data combined
+- Only valid responses with reaction times ≤ 4 seconds
+- Harmony and pair type classifications
+- Ready for statistical analysis
 
-- **`llfpm10`**: keeps lemmas whose frequency deviates from the median by a moderate amount — not too close (avoids items right at the median), not too far (avoids extreme outliers)
-- **`long_short_sbjv_log_odds`**: same logic, with a wider upper bound to allow more variation in the long/short ratio
-- **`log_odds_3sg_ind`**: keeps only items that are relatively **close** to the median — this controls for definiteness balance
+## Analysis Script
 
-The output lets you inspect how strict or lenient each threshold is before committing to one. After the loop ends, `second_sg_sbjv_piped` holds the result from the **last** threshold (`2.0`).
+The `analysis_script.R` script loads the cleaned data and produces visualizations and summary statistics.
 
-> **Tip:** If you want to use a specific threshold (e.g., `1.0`), you can run just that iteration of the loop manually and assign the result to `second_sg_sbjv_piped`.
+### Analysis Steps
 
----
+1. **Load Clean Data**: Reads the cleaned dataset from `data_cleaning/clean_data`
 
-### 6. Descriptive Statistics
+2. **Order Categories**: Ensures pair types are ordered consistently for visualization:
+   - back_cell → "várjad/várd"
+   - front_cell → "kérjed/kérd"
+   - back_form → "várjad/várja"
+   - front_form → "kérjed/kéri"
 
-```r
-summary(second_sg_sbjv_piped$llfpm10)
-summary(second_sg_sbjv_piped$log_odds_3sg_ind)
-summary(second_sg_sbjv_piped$long_short_sbjv_log_odds)
-```
+3. **Plot 1: Pair Averages**: Each point represents one unique prime-target pair's average reaction time across all participants
+   - Shows overall pattern of reaction times across pair types
+   - Violin plot with boxplot overlay and individual data points
 
-Prints basic summary statistics (min, median, mean, max) for the three variables in the filtered dataset. Useful for a quick sanity check.
+4. **Plot 2: Participant Averages**: Each point represents one participant's average reaction time for a pair type
+   - Shows variation between participants
+   - Same visualization structure for consistency
 
----
+### Output
 
-### 7. Distribution Histograms
+Two visualizations showing:
+- Distribution of reaction times by pair type
+- Balance and consistency across conditions
+- Individual participant variation
 
-```r
-par(mfrow = c(1, 3))
-hist(second_sg_sbjv_piped$llfpm10, main = "llfpm10")
-hist(second_sg_sbjv_piped$log_odds_3sg_ind, main = "log_odds_3sg_ind")
-hist(second_sg_sbjv_piped$long_short_sbjv_log_odds, main = "long_short_sbjv_log_odds")
-par(mfrow = c(1, 1))
-```
+## Pair Type Coding
 
-Plots three histograms side by side (one per variable) for the filtered data. `par(mfrow = c(1, 3))` sets up the 3-panel layout; `par(mfrow = c(1, 1))` resets it afterward.
+The experiment uses four main conditions defined by two dimensions:
 
----
+| Pair Type | Harmony | Ending | Example |
+|-----------|---------|--------|---------|
+| back_cell | Back | d-stem | várjad → várd |
+| back_form | Back | regular | várjad → várja |
+| front_cell | Front | d-stem | kérjed → kérd |
+| front_form | Front | regular | kérjed → kéri |
 
-### 8. Violin Plots Split by Stem Harmony
+## Running the Analysis
 
-```r
-second_sg_sbjv_long <- second_sg_sbjv_piped %>%
-  pivot_longer(cols = c(llfpm10, log_odds_3sg_ind, long_short_sbjv_log_odds),
-               names_to = "variable",
-               values_to = "value")
+1. Ensure all participant CSV files are in the `raw_data/` folder
+2. Run `data_cleaning/data_cleaning.R` to generate `clean_data`
+3. Run `analysis_script.R` to generate visualizations and summaries
 
-ggplot(second_sg_sbjv_long, aes(x = stem_harmony, y = value, fill = stem_harmony)) +
-  geom_violin() +
-  facet_wrap(~variable, scales = "free_y") +
-  theme_minimal() +
-  labs(title = "Distribution of Variables by Stem Harmony",
-       x = "Stem Harmony", y = "Value", fill = "Stem Harmony")
-```
+## Notes
 
-- **`pivot_longer()`** reshapes the data from wide to long format so all three variables can be plotted together
-- **`geom_violin()`** shows the full distribution shape for each group
-- **`facet_wrap(~variable)`** creates a separate panel for each variable
-- The plot compares **front** vs. **back** vowel harmony groups across all three variables
-
----
-
-### 9. Count Items per Category
-
-```r
-sum(second_sg_sbjv_piped$lemma_length == "mono")
-sum(second_sg_sbjv_piped$lemma_length == "poly")
-sum(second_sg_sbjv_piped$stem_harmony == "back")
-sum(second_sg_sbjv_piped$stem_harmony == "front")
-
-(second_sg_sbjv_piped %>% count(lemma_length, stem_harmony))
-```
-
-Quick counts to check the balance of the filtered set across the two design factors: **lemma length** (mono/poly) and **stem harmony** (back/front). Bad news: only 8 combination of mono-front.
-
----
-
-### 10. Stratified Sampling: 8 for each bc mono-front combination only had 8 examples, so all others are reduced to 8 from the original 10. This way instead of 40 the total stimuli contains only 32 lemmas.
-
-```r
-set.seed(123)
-sample1 <- second_sg_sbjv_piped %>%
-  group_by(lemma_length, stem_harmony) %>%
-  slice_sample(n = 8, replace = FALSE) %>%
-  ungroup()
-
-set.seed(456)
-sample2 <- second_sg_sbjv_piped %>%
-  group_by(lemma_length, stem_harmony) %>%
-  slice_sample(n = 8, replace = FALSE) %>%
-  ungroup()
-```
-
-Creates **two independent random samples** of 8 items per group (4 groups: mono×back, mono×front, poly×back, poly×front = 32 items each), using different random seeds so the samples don't overlap in their selection pattern. `set.seed()` ensures the sampling is reproducible.
-
----
-
-### 11. Check Sample Distributions
-
-```r
-print(sample1 %>% count(lemma_length, stem_harmony))
-print(sample2 %>% count(lemma_length, stem_harmony))
-```
-
-Verifies that each group has exactly 8 items in both samples. 
-
-The violin plots that follow (for `sample1_plot` and `sample2_plot`) repeat the same visualization logic as Step 8, now applied to each sample individually. This lets you confirm that both samples have similar distributional properties.
-
----
-
-### 12. Save the Filtered Dataset
-
-```r
-write_tsv(second_sg_sbjv_piped, "second_sg_sbjv_piped.tsv")
-```
-
-Saves the filtered (pre-sampling) dataset as a TSV file in your **current working directory**. You can set your working directory beforehand using `setwd("your/folder/path")`, or use `here::here()` if you prefer project-relative paths.
-
----
-
-## Output Files
-
-| File | Description |
-|------|-------------|
-| `second_sg_sbjv_piped.tsv` | Filtered dataset after threshold-based selection |
-| Plots (displayed in RStudio) | Histograms and violin plots for distribution checks |
-
----
-
-## Variables Used
-
-| Variable | Description |
-|----------|-------------|
-| `llfpm10` | Log lemma frequency per million (base 10) |
-| `log_odds_3sg_ind` | Log odds of definite vs. indefinite form in 3sg indicative |
-| `long_short_sbjv_log_odds` | Log odds of long vs. short subjunctive form |
-| `stem_harmony` | Vowel harmony class of the stem: `back` or `front` |
-| `lemma_length` | Syllable count category: `mono` or `poly` |
-| `subj_2nd` | 2nd person subjunctive form label (used for definiteness pre-filtering) |
-
-
-
-## PROBLEM: back and front frequencies show different distributions. The viloin plots have different curves comparing back and front lemmas. Back harmony naturally has lower frequency lemmas than front harmony. As copilot said: "This isn't a data quality problem — it's a linguistic pattern in your data."
+- The project uses the `here` package for file paths, which automatically detects the project root directory
+- All reaction time data is trimmed at 4 seconds to remove extreme outliers
+- Participants with error rates exceeding 50% are excluded from analysis
+- Pair type classification is based on target verb characteristics, applied to all trials in each pair regardless of stimulus type
