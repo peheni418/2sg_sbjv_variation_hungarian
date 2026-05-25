@@ -25,6 +25,9 @@ data_filtered <- data_filtered <- data %>%
     exclude_slow != "TRUE",                                         # Exclude slow trials
     !(key_resp_5.keys == "j" & stim_type == "type_distractor"),  # Exclude j + type_distractor rows
     !(key_resp_5.keys == "f" & stim_type == "type_target")       # Exclude f + type_target rows
+  ) |> 
+  mutate(
+    pair_type = factor(pair_type, levels = pair_order)
   )
 
 # ============================================================================
@@ -84,10 +87,12 @@ ggplot(participant_avg, aes(x = pair_type, y = mean_rt)) +
 
 # Fit the GLMM
 model <- glmer(
-  key_resp_5.rt ~ pair_type + (1|participant) + (1|pair),
+  key_resp_5.rt ~ pair_type + (1|participant) + (1|primeHeni),
   family = Gamma(link = 'log'),
   data = data_filtered
 )
 
 # View results
 summary(model)
+sjPlot::plot_model(model, 'pred')
+broom.mixed::tidy(model)
