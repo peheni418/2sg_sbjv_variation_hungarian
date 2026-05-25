@@ -1,10 +1,11 @@
 library(ggplot2)
 library(tidyverse)
 library(here)
+library(lme4)
 
 
 # ----- Set path to data file -----
-data <- read_csv(here("data_cleaning/clean_data"))
+data <- read_csv(here("clean_data.csv"))
 
 # ----- Make sure pair_type is ordered -----
 pair_order <- c("back_cell", "front_cell", "back_form", "front_form")
@@ -17,16 +18,25 @@ pair_labels <- c(
 
 data$pair_type <- factor(data$pair_type, levels = pair_order)
 
+data_filtered <- data_filtered <- data %>%
+  filter(
+    stim_type != "type_distractor",                              # Exclude type_distractor rows
+    exclude_bad_participant != "TRUE",                              # Exclude bad participants
+    exclude_slow != "TRUE",                                         # Exclude slow trials
+    !(key_resp_5.keys == "j" & stim_type == "type_distractor"),  # Exclude j + type_distractor rows
+    !(key_resp_5.keys == "f" & stim_type == "type_target")       # Exclude f + type_target rows
+  )
+
 # ============================================================================
 # PLOT 1: Each POINT is a single pair's average across all participants
 # e.g., átlag RT all participants gave to "engedjed,edgedjen"
 # ============================================================================
 
 # Combine prime/target for each trial (for unique pairs)
-data <- data %>%
+data_filtered <- data_filtered %>%
   mutate(pair = paste(primeHeni, targetHeni, sep = " → "))
 
-pair_avg <- data %>%
+pair_avg <- data_filtered %>%
   filter(!is.na(pair_type)) %>%
   group_by(pair, pair_type) %>%
   summarise(mean_rt = mean(key_resp_5.rt, na.rm = TRUE), .groups = "drop")
@@ -48,7 +58,7 @@ ggplot(pair_avg, aes(x = pair_type, y = mean_rt)) +
 # e.g., átlag RT for participant 013564 to 'back_cell'
 # ============================================================================
 
-participant_avg <- data %>%
+participant_avg <- data_filtered %>%
   filter(!is.na(pair_type)) %>%
   group_by(participant, pair_type) %>%
   summarise(mean_rt = mean(key_resp_5.rt, na.rm = TRUE), .groups = "drop")
@@ -68,3 +78,16 @@ ggplot(participant_avg, aes(x = pair_type, y = mean_rt)) +
   theme_minimal() +
   theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
 
+
+## =============
+
+
+# Fit the GLMM
+model <- glmer(
+  key_resp_5.rt ~ pair_type + (1|participant) + (1|pair),
+  family = Gamma(link = 'log'),
+  data = data_filtered
+)
+
+# View results
+summary(model)
