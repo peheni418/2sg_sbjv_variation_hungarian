@@ -2,17 +2,6 @@
 
 This project investigates morphological priming effects in Hungarian, examining how different verb forms affect processing speed and accuracy in a lexical decision task.
 
-## Project Structure
-
-```
-morphological_priming_hungarian/
-├── raw_data/                    # All participant results from the experiment
-├── data_cleaning/               # Data cleaning process and output
-│   ├── data_cleaning.R          # Script to process raw data
-│   └── clean_data               # Cleaned dataset (output)
-├── analysis_script.R            # Statistical analysis and visualizations
-└── README.md                    # This file
-```
 
 ## Raw Data
 
