@@ -25,7 +25,12 @@ data_filtered <- data_filtered <- data %>%
     exclude_slow != "TRUE",                                         # Exclude slow trials
     !(key_resp_5.keys == "j" & stim_type == "type_distractor"),  # Exclude j + type_distractor rows
     !(key_resp_5.keys == "f" & stim_type == "type_target")       # Exclude f + type_target rows
+  ) |> 
+  mutate(
+    pair_type = factor(pair_type, levels = pair_order)
   )
+
+
 
 # ============================================================================
 # PLOT 1: Each POINT is a single pair's average across all participants
@@ -84,10 +89,32 @@ ggplot(participant_avg, aes(x = pair_type, y = mean_rt)) +
 
 # Fit the GLMM
 model <- glmer(
-  key_resp_5.rt ~ pair_type + (1|participant) + (1|pair),
+  key_resp_5.rt ~ pair_type + (1|participant) + (1|primeHeni),
   family = Gamma(link = 'log'),
   data = data_filtered
 )
 
 # View results
 summary(model)
+
+sjPlot::plot_model(model, 'pred')
+
+sjPlot::plot_model(model, 'pred') +
+  theme_bw() + # nice background
+  labs(
+    title = 'predicted values of rt x condition',
+    x = 'condition',
+    y = 'rt'
+  ) + # nice labs
+  # horizontal line
+  annotate("segment",
+           x = 1, xend = 3,          # back_cell=1, back_form=3 (position on x axis)
+           y = 0.85, yend = 0.85) +
+  # left tick
+  annotate("segment", x = 1, xend = 1, y = 0.85, yend = 0.845) +
+  # right tick
+  annotate("segment", x = 3, xend = 3, y = 0.85, yend = 0.845) +
+  # stars
+  annotate("text", x = 2, y = 0.855, label = "**", size = 5)
+
+
