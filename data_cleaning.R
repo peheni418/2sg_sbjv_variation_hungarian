@@ -1,6 +1,8 @@
 library(here)
 library(tidyverse)
 
+##ATTENTION: THERE IS ONE PARTICIPANTS WHO GAVE IS NEPTUN CODE AS PARTICIPANT ID: UMIZ4M. AS A FIRST STEP IT IS NEEDED TO BE RENAMED. I USUSALLY DO UMIZ4M --> 123456. 
+
 # =================== DATA LOADING ===================
 # Read all CSVs, each participant's file is named with 6 digits then '_priming.csv'
 data <- list.files(

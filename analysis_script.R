@@ -54,7 +54,7 @@ ggplot(pair_avg, aes(x = pair_type, y = mean_rt)) +
   labs(
     x = "Pair Type",
     y = "Mean Reaction Time (s)",
-    title = "Average Rection Times per Category"
+    title = "Average Reaction Times per Category"
   ) +
   theme_minimal()
 
