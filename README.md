@@ -1,114 +1,69 @@
 # Morphological Priming in Hungarian
 
-This project investigates morphological priming effects in Hungarian, examining how different verb forms affect processing speed and accuracy in a lexical decision task.
+This project investigates morphological priming effects in Hungarian: how
+different verb forms affect processing speed and accuracy in a lexical decision
+task. The experiment lives at
+https://gitlab.pavlovia.org/peheni/variation2sg_priming_2026.
 
+## Layout
 
-## Raw Data
+```
+.
+├── raw_data/           per-participant csvs from psychopy (XXXXXX_priming.csv)
+├── dat/                wrangled and intermediate data
+│   ├── clean_data.csv      output of script/build_data.R
+│   ├── data_filtered.csv   the subset used for modelling
+│   └── pair_avg.csv        per-pair averages used in plots
+├── script/             analysis pipeline
+│   ├── build_data.R        raw_data -> dat/clean_data.csv
+│   ├── fit.R               fits the main glmm, saves to fit/
+│   ├── viz.R               loads data + fit, writes plots into viz/
+│   └── hypothesis_testing.R    prereg H0-H3 comparison
+├── fit/                saved model objects (.rds)
+├── viz/                figures (png, 900 dpi)
+└── stimuli_building/   stimulus construction (separate from analysis)
+```
 
-The `raw_data/` folder contains individual CSV files from each participant. These files are generated from the PsychoPy experiment and follow the naming convention: `XXXXXX_priming.csv` where `XXXXXX` is the participant ID.
+## Pipeline
 
-Raw data includes:
-- Participant responses (key presses)
-- Reaction times
-- Prime verb forms
-- Target verb forms
-- Stimulus types (target or distractor)
+Run from the project root in order:
 
-The complete experiment structure and additional documentation can be found in the GitLab repository: https://gitlab.pavlovia.org/peheni/variation2sg_priming_2026
+1. `script/build_data.R` — reads `raw_data/`, applies exclusion flags
+   (slow trials, high-error participants), assigns harmony class and pair type,
+   writes `dat/clean_data.csv`.
+2. `script/fit.R` — fits the main glmm (`rt ~ pair_type + (1|participant) +
+   (1|item)`, gamma with log link) on the filtered data and saves it to
+   `fit/fit1.rds`.
+3. `script/viz.R` — produces three plots into `viz/`: per-pair averages,
+   per-participant averages, and the model's predicted RT by condition.
+4. `script/hypothesis_testing.R` — independent, prereg-driven comparison
+   of four hypotheses (H0-H3) via AIC, BIC, and BIC-based Bayes factors.
 
-## Data Cleaning Process
+## Exclusions
 
-The `data_cleaning/data_cleaning.R` script processes raw participant data and produces a single cleaned dataset. 
+Applied uniformly across `fit.R`, `viz.R`, and `hypothesis_testing.R`:
 
-### Cleaning Steps
-
-1. **Load and Combine Files**: Reads all participant CSV files from the `raw_data/` folder and combines them into one dataset, extracting participant IDs from filenames
-
-2. **Select Relevant Columns**: Keeps only:
-   - `participant` — participant ID
-   - `key_resp_5.keys` — key pressed (f or j)
-   - `key_resp_5.rt` — reaction time in seconds
-   - `primeHeni` — prime verb form
-   - `targetHeni` — target verb form
-   - `stim_type` — stimulus type
-
-3. **Remove Missing Data**: Filters out rows with missing values in key columns
-
-4. **Remove Outliers**: Excludes reaction times above 4 seconds
-
-5. **Exclude Participants with High Error Rates**: Removes participants with error rates above 50% (identifying participants who:
-   - Pressed "f" for targets and "j" for distractors correctly)
-
-6. **Determine Harmony Class**: Creates a `harmony_class` column based on verb ending:
-   - Front vowel harmony: target verb ends with "i"
-   - Back vowel harmony: all other cases
-   - Extends harmony class to primes based on the targets they appear with
-
-7. **Create Pair Types**: Categorizes each target into one of four pair types:
-   - `back_cell` — back harmony target ending with "d"
-   - `back_form` — back harmony target not ending with "d"
-   - `front_cell` — front harmony target ending with "d"
-   - `front_form` — front harmony target not ending with "d"
-
-8. **Summary Statistics**: Calculates mean reaction times per pair type and target
-
-### Output
-
-The cleaned dataset is saved as `data_cleaning/clean_data` and contains:
-- All participant data combined
-- Only valid responses with reaction times ≤ 4 seconds
-- Harmony and pair type classifications
-- Ready for statistical analysis
-
-## Analysis Script
-
-The `analysis_script.R` script loads the cleaned data and produces visualizations and summary statistics.
-
-### Analysis Steps
-
-1. **Load Clean Data**: Reads the cleaned dataset from `data_cleaning/clean_data`
-
-2. **Order Categories**: Ensures pair types are ordered consistently for visualization:
-   - back_cell → "várjad/várd"
-   - front_cell → "kérjed/kérd"
-   - back_form → "várjad/várja"
-   - front_form → "kérjed/kéri"
-
-3. **Plot 1: Pair Averages**: Each point represents one unique prime-target pair's average reaction time across all participants
-   - Shows overall pattern of reaction times across pair types
-   - Violin plot with boxplot overlay and individual data points
-
-4. **Plot 2: Participant Averages**: Each point represents one participant's average reaction time for a pair type
-   - Shows variation between participants
-   - Same visualization structure for consistency
-
-### Output
-
-Two visualizations showing:
-- Distribution of reaction times by pair type
-- Balance and consistency across conditions
-- Individual participant variation
+- drop distractor trials,
+- drop participants with error rate > .5,
+- drop trials with rt > 4 s,
+- drop incorrect ('f') responses on targets.
 
 ## Pair Type Coding
 
-The experiment uses four main conditions defined by two dimensions:
+The experiment crosses harmony with target shape:
 
-| Pair Type | Harmony | Ending | Example |
-|-----------|---------|--------|---------|
-| back_cell | Back | d-stem | várjad → várd |
-| back_form | Back | regular | várjad → várja |
-| front_cell | Front | d-stem | kérjed → kérd |
-| front_form | Front | regular | kérjed → kéri |
-
-## Running the Analysis
-
-1. Ensure all participant CSV files are in the `raw_data/` folder
-2. Run `data_cleaning/data_cleaning.R` to generate `clean_data`
-3. Run `analysis_script.R` to generate visualizations and summaries
+| Pair Type  | Harmony | Target shape | Example         |
+|------------|---------|--------------|-----------------|
+| back_cell  | back    | d-stem       | várjad → várd   |
+| back_form  | back    | regular      | várjad → várja  |
+| front_cell | front   | d-stem       | kérjed → kérd   |
+| front_form | front   | regular      | kérjed → kéri   |
 
 ## Notes
 
-- The project uses the `here` package for file paths, which automatically detects the project root directory
-- All reaction time data is trimmed at 4 seconds to remove extreme outliers
-- Participants with error rates exceeding 50% are excluded from analysis
-- Pair type classification is based on target verb characteristics, applied to all trials in each pair regardless of stimulus type
+- Paths use `here::here()` from the project root.
+- Seed is `1337` throughout.
+
+## Corpus
+
+The corpus folder has the scripts to build the 2sg.sbjv dataset from the webcorpus frequency list; fit model on data; build visualisation. Data live in dat.
