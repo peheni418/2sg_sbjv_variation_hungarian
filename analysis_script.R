@@ -2,10 +2,12 @@ library(ggplot2)
 library(tidyverse)
 library(here)
 library(lme4)
+library(glmmTMB)
+library(sjPlot)
 
 
 # ----- Set path to data file -----
-data <- read_csv(here("clean_data.csv"))
+data <- read_csv("clean_data.csv")
 
 # ----- Make sure pair_type is ordered -----
 pair_order <- c("back_cell", "front_cell", "back_form", "front_form")
@@ -84,8 +86,9 @@ ggplot(participant_avg, aes(x = pair_type, y = mean_rt)) +
   theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
 
 
-## =============
-
+# ================
+# LME4 model
+# ================
 
 # Fit the GLMM
 model <- glmer(
@@ -93,6 +96,8 @@ model <- glmer(
   family = Gamma(link = 'log'),
   data = data_filtered
 )
+
+summary(model)
 
 # View results
 summary(model)
@@ -123,3 +128,31 @@ sjPlot::plot_model(model, 'pred') +
 sjPlot::plot_model(model, 'pred')
 broom.mixed::tidy(model)
 >>>>>>> 01a728efabab64f075dbc38b7cb86bb384bfe3c7:script/analysis_script.R
+
+
+# =============================================================
+# GLMMTMB: smaller standard errors, more confident estimates
+# =============================================================
+
+glmTmb_model <- glmmTMB(
+  key_resp_5.rt ~ pair_type + (1|participant) + (1|primeHeni),
+  family = Gamma(link = 'log'),
+  data = data_filtered
+)
+
+
+summary(glmTmb_model)
+
+sjPlot::plot_model(model, 'pred') +
+  theme_bw() +
+  labs(
+    title = 'predicted values of rt x condition',
+    x = 'condition',
+    y = 'rt'
+  ) +
+  annotate("segment",
+           x = 1, xend = 3,
+           y = 0.85, yend = 0.85) +
+  annotate("segment", x = 1, xend = 1, y = 0.85, yend = 0.845) +
+  annotate("segment", x = 3, xend = 3, y = 0.85, yend = 0.845) +
+  annotate("text", x = 2, y = 0.855, label = "**", size = 5)
