@@ -122,3 +122,15 @@ fit1 |>
   select(term,estimate,std.error,conf.low,conf.high,p.value) |> 
   mutate_if(is.double, ~ round(.,3)) |> 
   googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','Sheet1')
+
+# emmeans
+
+p4 = emmeans::emmeans(fit1, ~ pair_type) |> 
+  plot(comparisons = TRUE) +
+  geom_vline(xintercept = 0, linetype = "dashed") +  # only if on response scale
+  theme_bw() +
+  # scale_y_discrete(labels = pair_labels, name = 'pair type')
+
+ggsave(here('viz', 'plot_model_contrasts_25.png'), p4,
+       width = 6, height = 4, dpi = 900)
+
