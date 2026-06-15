@@ -48,6 +48,7 @@ fit1 = glmmTMB(
 
 check_overdispersion(fit1)
 check_collinearity(fit1)
+check_autocorrelation(fit1)
 
 # -- report -- #
 
