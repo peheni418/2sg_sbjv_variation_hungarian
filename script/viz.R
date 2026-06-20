@@ -3,7 +3,7 @@
 # all plots for the priming analysis. loads the clean data and the saved fit;
 # saves png figures into viz/.
 
-setwd('~/Github/morphological_priming_hungarian/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(here)
 library(tidyverse)

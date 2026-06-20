@@ -4,7 +4,7 @@
 # and comparing them via AIC, BIC, RMSE, and BIC-based Bayes factors.
 # https://aspredicted.org/92c82r.pdf
 
-setwd('~/Github/morphological_priming_hungarian/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(here)
 library(tidyverse)

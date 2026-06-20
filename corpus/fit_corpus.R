@@ -1,6 +1,6 @@
 # -- head -- #
 
-setwd('~/Github/PokkRebrusRacz2027varjal/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(tidyverse)
 library(lme4)

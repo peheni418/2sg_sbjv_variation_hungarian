@@ -3,7 +3,7 @@
 # wrangle raw psychopy csvs into a tidy clean_data.csv with exclusion flags,
 # harmony class, and pair type.
 
-setwd('~/Github/morphological_priming_hungarian/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(here)
 library(tidyverse)
