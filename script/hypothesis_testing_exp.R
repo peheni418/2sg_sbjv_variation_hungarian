@@ -4,7 +4,7 @@
 # and comparing them via AIC, BIC, RMSE, and BIC-based Bayes factors.
 # https://aspredicted.org/92c82r.pdf
 
-setwd('~/Github/morphological_priming_hungarian/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(here)
 library(tidyverse)
@@ -100,9 +100,9 @@ simulateResiduals(h3, plot = TRUE)
 plot(compare_performance(h0, h1, h2, h3, metrics = 'common'))
 
 test_performance(h0, h1) # H1 better than null
-test_bf(h0, h1)          # H1 ~2.7x better than H0
-test_bf(h2, h1)          # H1 ~6.4x better than H2
-test_bf(h3, h1)          # H1 ~40x  better than H3
+test_bf(h0, h1)          # H1 ~32x better than H0
+test_bf(h2, h1)          # H1 ~12x better than H2
+test_bf(h3, h1)          # H1 ~34x  better than H3
 
 # -- table -- #
 

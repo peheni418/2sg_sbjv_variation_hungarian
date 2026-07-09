@@ -3,7 +3,7 @@
 # all plots for the priming analysis. loads the clean data and the saved fit;
 # saves png figures into viz/.
 
-setwd('~/Github/morphological_priming_hungarian/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(here)
 library(tidyverse)
@@ -114,3 +114,23 @@ p3 = plot_model(fit1, type = 'pred', terms = 'pair_type') +
 
 ggsave(here('viz', 'plot_model_25.png'), p3,
        width = 6, height = 4, dpi = 900)
+
+# model summary, written into google sheet for easy pasting
+fit1 |> 
+  broom.mixed::tidy(conf.int = T) |> 
+  filter(effect == 'fixed') |> 
+  select(term,estimate,std.error,conf.low,conf.high,p.value) |> 
+  mutate_if(is.double, ~ round(.,3)) |> 
+  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','Sheet1')
+
+# emmeans
+
+p4 = emmeans::emmeans(fit1, ~ pair_type) |> 
+  plot(comparisons = TRUE) +
+  geom_vline(xintercept = 0, linetype = "dashed") +  # only if on response scale
+  theme_bw() +
+  # scale_y_discrete(labels = pair_labels, name = 'pair type')
+
+ggsave(here('viz', 'plot_model_contrasts_25.png'), p4,
+       width = 6, height = 4, dpi = 900)
+

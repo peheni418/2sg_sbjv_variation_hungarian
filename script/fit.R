@@ -3,7 +3,7 @@
 # fit the main glmm: rt ~ pair_type with crossed random effects for
 # participant and prime. saves the fit to fit/.
 
-setwd('~/Github/morphological_priming_hungarian/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(here)
 library(tidyverse)
@@ -48,6 +48,7 @@ fit1 = glmmTMB(
 
 check_overdispersion(fit1)
 check_collinearity(fit1)
+check_autocorrelation(fit1)
 
 # -- report -- #
 
