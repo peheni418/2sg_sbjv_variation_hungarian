@@ -93,6 +93,9 @@ final_lemma_list <- sample1 |> select(lemma)
 
 # Read full frequency table and keep high-frequency, spellchecked verbs.
 # Also exclude auxiliaries/function items and a few manual exclusions.
+##############################
+# Parquet file: https://github.com/petyaracz/Webcorpus2FrequencyList
+##############################
 real_verbs <- read_parquet(here("stimuli_building", "frequencies.parquet")) %>%
   filter(freq > 100) %>%
   filter(str_detect(xpostag, "\\[/V\\]")) %>%
