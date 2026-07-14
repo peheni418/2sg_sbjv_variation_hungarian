@@ -30,6 +30,18 @@ d = d |>
   select(participant, key_resp_5.keys, key_resp_5.rt, primeHeni, targetHeni, stim_type) |>
   drop_na()
 
+
+# -- completion -- #
+
+# completed participant: exactly 144 trials
+d = d |>
+  mutate(
+    n_trials = n(),
+    complete = n_trials == 144,
+    .by = participant
+  ) |>
+  select(-n_trials)
+
 # -- exclusions -- #
 
 # slow trials: rt > 4 s
@@ -52,6 +64,33 @@ d = d |>
     .by = participant
   ) |>
   select(-error)
+
+
+# -- completion time -- #
+
+# completion time per participant:
+# from first instructions.started to last end_2.stopped
+completion_time = list.files(
+  here('raw_data'),
+  pattern = '^[0-9]{6}_priming\\.csv$',
+  full.names = TRUE
+) |>
+  map_df(\(x) {
+    tmp = read.csv(x)
+    tibble(
+      participant = str_extract(basename(x), '^[0-9]{6}'),
+      completion_time_sec =
+        max(tmp$end_2.stopped, na.rm = TRUE) -
+        min(tmp$instructions.started, na.rm = TRUE)
+    )
+  })
+
+# attach participant-level completion time to all rows
+d = d |>
+  left_join(completion_time, by = 'participant')
+
+# print median completion time (seconds) to console
+cat('Median completion time (sec):', median(completion_time$completion_time_sec, na.rm = TRUE), '\n')
 
 # -- harmony class -- #
 
