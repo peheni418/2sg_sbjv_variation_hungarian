@@ -27,8 +27,10 @@ pair_labels = c(
   'front_form' = 'kérjed/kéri'
 )
 
+
 # correct target trials only; same filter as fit.R
 d = d |>
+  filter(complete) |>
   filter(
     stim_type != 'type_distractor',
     !exclude_bad_participant,
