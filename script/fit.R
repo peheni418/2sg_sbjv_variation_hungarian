@@ -23,6 +23,9 @@ pair_order = c('back_cell', 'front_cell', 'back_form', 'front_form')
 
 # keep correct ('j') target trials from good participants, fast trials only
 d = d |>
+  # 1) keep only completed participants
+  filter(complete) |>
+  # 2) apply trial/quality filters within completed participants
   filter(
     stim_type != 'type_distractor',
     !exclude_bad_participant,
