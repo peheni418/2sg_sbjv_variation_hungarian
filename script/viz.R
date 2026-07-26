@@ -14,7 +14,7 @@ set.seed(1337)
 
 # -- read -- #
 
-d    = read_csv(here('dat', 'clean_data.csv'))
+d    = read_csv(here('dat', 'clean_data_filtered.csv'))
 fit1 = readRDS(here('fit', 'fit1.rds'))
 
 # -- setup -- #
@@ -131,7 +131,7 @@ p4 = emmeans::emmeans(fit1, ~ pair_type) |>
   plot(comparisons = TRUE) +
   geom_vline(xintercept = 0, linetype = "dashed") +  # only if on response scale
   theme_bw() +
-  # scale_y_discrete(labels = pair_labels, name = 'pair type')
+  scale_y_discrete(labels = pair_labels, name = 'pair type')
 
 ggsave(here('viz', 'plot_model_contrasts_25.png'), p4,
        width = 6, height = 4, dpi = 900)

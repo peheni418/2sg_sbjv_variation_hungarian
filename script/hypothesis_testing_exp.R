@@ -17,7 +17,7 @@ set.seed(1337)
 
 # -- read -- #
 
-d = read_csv(here('dat', 'clean_data.csv'))
+d = read_csv(here('dat', 'clean_data_filtered.csv'))
 
 # -- setup -- #
 
@@ -119,5 +119,6 @@ bf_names  = tibble(BF_comparison = c('H1 vs H0', '', 'H1 vs H2', 'H1 vs H3'))
 t1 = bind_cols(t1, bf_names, bfs)
 
 t1 |>
-  select(Name, AIC, BIC, RMSE, BF_comparison, BF) |>
-  knitr::kable(digits = 2)
+  select(Name, AIC, BIC, R2_marginal, BF_comparison, BF) |>
+  knitr::kable(digits = 3) |> 
+  write_lines('exp_hypothesis_testing.txt')

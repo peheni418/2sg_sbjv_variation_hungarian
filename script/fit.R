@@ -15,7 +15,7 @@ set.seed(1337)
 
 # -- read -- #
 
-d = read_csv(here('dat', 'clean_data.csv'))
+d = read_csv(here('dat', 'clean_data_filtered.csv'))
 
 # -- setup -- #
 
@@ -23,18 +23,7 @@ pair_order = c('back_cell', 'front_cell', 'back_form', 'front_form')
 
 # keep correct ('j') target trials from good participants, fast trials only
 d = d |>
-  # 1) keep only completed participants
-  filter(complete) |>
-  # 2) apply trial/quality filters within completed participants
-  filter(
-    stim_type != 'type_distractor',
-    !exclude_bad_participant,
-    !exclude_slow,
-    !(key_resp_5.keys == 'f' & stim_type == 'type_target')
-  ) |>
   mutate(
-    rt   = key_resp_5.rt,
-    item = primeHeni,
     pair_type = factor(pair_type, levels = pair_order)
   )
 

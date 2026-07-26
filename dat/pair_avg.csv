@@ -88,10 +88,10 @@ csomagoljad → csomagolja,back_form,0.811554166625
 tanácsoljad → tanácsolja,back_form,0.8654958333333334
 használjad → használja,back_form,0.9606739130434783
 tiporjad → tipord,front_cell,0.8067541666666667
-kritizáljad → kritizáld,back_cell,0.7746086956086957
+kritizáljad → kritizáld,back_cell,0.7746086956086956
 bámuljad → bámuld,back_cell,0.66813999996
 nyomjad → nyomd,back_cell,0.6472208333333334
-űzzed → űzi,front_form,0.9382375000000001
+űzzed → űzi,front_form,0.9382375
 nyergeljed → nyergeli,front_form,0.9126409090909091
 közöljed → közöld,front_cell,0.6542041666666667
 érezzed → érzi,front_form,0.7359043478260869

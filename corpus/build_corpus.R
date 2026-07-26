@@ -3,7 +3,7 @@
 
 # -- head -- #
 
-setwd('~/Github/adjal/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(tidyverse)
 library(duckdb)
@@ -245,5 +245,7 @@ dl = left_join(dl,tags)
 
 # -- write -- #
 
+dw |> 
+  write_tsv('dat/corpus_short_long_pairs_wide.tsv')
 dl |> 
-  write_tsv('dat/short_long_pairs_long.tsv')
+  write_tsv('dat/corpus_short_long_pairs_long.tsv')

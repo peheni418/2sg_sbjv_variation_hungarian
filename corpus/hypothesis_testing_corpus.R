@@ -58,9 +58,24 @@ simulateResiduals(m3) |> testResiduals()
 
 compare_performance(m0,m1,m2,m3, metrics = 'common') |> 
   arrange(AIC)
-test_bf(m0,m2) # 2.8
-test_bf(m0,m1) # ~0
-test_bf(m1,m2) # 5000
+bf0_2 = test_bf(m0,m2) # 2.8
+bf0_1 = test_bf(m0,m1) # ~0
+bf1_2 = test_bf(m1,m2) # 5000
+
+# -- write -- #
+
+t1 = compare_performance(m0,m1,m2,m3, metrics = 'common') 
+# 
+# bfs       = tibble(BF = as.double(c(bf0_1$BF[2], '', bf3$BF[2], bf4$BF[2])))
+# bf_names  = tibble(BF_comparison = c('H1 vs H0', '', 'H1 vs H2', 'H1 vs H3'))
+# t1 = bind_cols(t1, bf_names, bfs)
+# tbc
+
+t1 |>
+  select(Name, AIC, BIC, R2_marginal, BF_comparison, BF) |>
+  knitr::kable(digits = 3) |> 
+  write_lines('exp_hypothesis_testing.txt')
+
 
 # -- viz -- #
 
