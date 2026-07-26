@@ -56,27 +56,32 @@ simulateResiduals(m3) |> testResiduals()
 
 # -- compare -- #
 
-compare_performance(m0,m1,m2,m3, metrics = 'common') |> 
-  arrange(AIC)
-bf0_2 = test_bf(m0,m2) # 2.8
-bf0_1 = test_bf(m0,m1) # ~0
-bf1_2 = test_bf(m1,m2) # 5000
+t1 = compare_performance(m0,m1,m2,m3, metrics = 'common') |>
+  select(Name,AIC,BIC,R2_marginal) |> 
+  tibble()
+bf2_0 = test_bf(m0,m2)
+bf2_1 = test_bf(m1,m2)
+bf2_3 = test_bf(m3,m2)
+
+# -- comparison -- #
+
+bfs       = tibble(log_BF = as.double(c(log(bf2_0$BF[2]), log(bf2_1$BF[2]), NA, log(bf2_3$BF[2]))))
+bf_names  = tibble(BF_comparison = c('H2 vs H0', 'H2 vs H1', '', 'H2 vs H3'))
+t1b = bind_cols(t1, bf_names, bfs)
+
+# -- best model -- #
+
+t2 = m2 |> 
+  broom.mixed::tidy(conf.int = T) |> 
+  filter(effect == 'fixed') |> 
+  select(term,estimate,std.error,conf.low,conf.high)
 
 # -- write -- #
 
-t1 = compare_performance(m0,m1,m2,m3, metrics = 'common') 
-# 
-# bfs       = tibble(BF = as.double(c(bf0_1$BF[2], '', bf3$BF[2], bf4$BF[2])))
-# bf_names  = tibble(BF_comparison = c('H1 vs H0', '', 'H1 vs H2', 'H1 vs H3'))
-# t1 = bind_cols(t1, bf_names, bfs)
-# tbc
+t1b |> 
+  mutate_if(is.double, ~ round(.,3)) |> 
+  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','corpus_selection')
 
-t1 |>
-  select(Name, AIC, BIC, R2_marginal, BF_comparison, BF) |>
-  knitr::kable(digits = 3) |> 
-  write_lines('exp_hypothesis_testing.txt')
-
-
-# -- viz -- #
-
-plot_model(m2, 'pred', terms = c('log_odds_3sg_ind_scaled','subj_2nd'))
+t2 |> 
+  mutate_if(is.double, ~ round(.,3)) |> 
+  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','corpus_best_model')

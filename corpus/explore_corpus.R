@@ -16,7 +16,7 @@
 
 # -- head -- #
 
-setwd('~/Github/adjal/')
+setwd('~/Github/2sg_sbjv_variation_hungarian/')
 
 library(tidyverse)
 library(lme4)
@@ -54,7 +54,7 @@ analogyPlot = function(dat){
 
 # -- read -- #
 
-dl = read_tsv('dat/short_long_pairs_long.tsv')
+dl = read_tsv('dat/corpus_short_long_pairs_long.tsv')
 
 # -- simple summary, def/indef freq -- #
 
@@ -87,8 +87,7 @@ compare_performance(fit_simple0,fit_simple1,fit_simple2) |>
   mutate(model = model |> 
   str_remove(' \\+ \\(1 \\| obs_id\\) \\+ \\(1 \\| lemma\\)')
   ) |> 
-  select(model,AIC,BIC,RMSE) |> 
-  write_tsv('viz/base_model_table.tsv')
+  select(model,AIC,BIC,RMSE)
 
 ######################################################
 # Q1: Given rakja-rakjad and lépi<->lépje, do we have stem vowel x def/indef interaction?

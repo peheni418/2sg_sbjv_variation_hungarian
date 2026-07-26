@@ -19,13 +19,11 @@ d = read_csv(here('dat', 'clean_data_filtered.csv'))
 
 # -- setup -- #
 
-pair_order = c('back_cell', 'front_cell', 'back_form', 'front_form')
-
-# keep correct ('j') target trials from good participants, fast trials only
+# glmmTMB stores character predictors as-is rather than coercing to a
+# factor; downstream tools (sjPlot::plot_model) then fall back to an
+# unpredictable level order instead of alphabetical, so convert explicitly
 d = d |>
-  mutate(
-    pair_type = factor(pair_type, levels = pair_order)
-  )
+  mutate(pair_type = factor(pair_type))
 
 # -- fit -- #
 
@@ -44,7 +42,8 @@ check_autocorrelation(fit1)
 
 # -- report -- #
 
-tidy(fit1, conf.int = TRUE)
+broom.mixed::tidy(fit1, conf.int = TRUE) 
+  
 summary(fit1)
 
 # -- save -- #

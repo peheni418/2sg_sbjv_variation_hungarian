@@ -137,8 +137,7 @@ d2 = d |>
   ) |>
   mutate(
     rt   = key_resp_5.rt,
-    item = primeHeni,
-    pair_type = factor(pair_type, levels = pair_order)
+    item = primeHeni
   )
 
 # -- write -- #

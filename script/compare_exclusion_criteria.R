@@ -65,8 +65,6 @@ overlap |> knitr::kable()
 
 # -- apply exclusions -- #
 
-pair_order = c('back_cell', 'front_cell', 'back_form', 'front_form')
-
 # same downstream filters as fit.R; only the rt-based flag differs
 base_filter = function(data, rt_flag) {
   data |>
@@ -78,8 +76,7 @@ base_filter = function(data, rt_flag) {
     ) |>
     mutate(
       rt   = key_resp_5.rt,
-      item = primeHeni,
-      pair_type = factor(pair_type, levels = pair_order)
+      item = primeHeni
     )
 }
 

@@ -8,7 +8,7 @@ library(patchwork)
 
 # -- read -- #
 
-d = read_tsv('dat/dat_summary_with_props.tsv')
+d = read_tsv('dat/corpus_dat_summary_with_props.tsv')
 
 # -- viz -- #
 

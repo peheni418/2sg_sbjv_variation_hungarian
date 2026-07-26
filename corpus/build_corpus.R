@@ -245,7 +245,35 @@ dl = left_join(dl,tags)
 
 # -- write -- #
 
-dw |> 
+dw |>
   write_tsv('dat/corpus_short_long_pairs_wide.tsv')
-dl |> 
+dl |>
   write_tsv('dat/corpus_short_long_pairs_long.tsv')
+
+# -- summary with props -- #
+
+# dat/corpus_dat_summary_with_props.tsv (read by hypothesis_testing_corpus.R
+# and fit_corpus.R) predates this script and was hand-built with no
+# generating code checked in. this block reverse engineered by Claude,
+# hand-checked: every column below was verified against all 2001 rows of the
+# existing file (matched exactly, using dw's row order for obs_id). the four
+# log_odds_* columns use add-one (Laplace) smoothing to avoid log(0) on
+# zero-count cells; log_odds_3pl_sbjv puts NDef in the numerator, unlike the
+# other three which put Def in the numerator -- kept as-is to match the
+# existing file, but worth revisiting since it looks like an inconsistency.
+dw |>
+  mutate(
+    obs_id = row_number(),
+    lemma_length = ifelse(lemma_syl_count == 1, 'mono', 'poly'),
+    long_short_sbjv_log_odds = log((long_freq + 1) / (short_freq + 1)),
+    log_odds_3sg_ind  = log((Prs_Def_3Sg_freq + 1) / (Prs_NDef_3Sg_freq + 1)),
+    log_odds_3sg_sbjv = log((Sbjv_Def_3Sg_freq + 1) / (Sbjv_NDef_3Sg_freq + 1)),
+    log_odds_3pl_ind  = log((Prs_Def_3Pl_freq + 1) / (Prs_NDef_3Pl_freq + 1)),
+    log_odds_3pl_sbjv = log((Sbjv_NDef_3Pl_freq + 1) / (Sbjv_Def_3Pl_freq + 1))
+  ) |>
+  select(
+    long_freq, long_short_sbjv_log_odds, short_freq, lemma, stem_harmony,
+    subj_2nd, lemma_length, llfpm10, log_odds_3pl_ind, obs_id,
+    log_odds_3pl_sbjv, log_odds_3sg_ind, log_odds_3sg_sbjv
+  ) |>
+  write_tsv('dat/corpus_dat_summary_with_props.tsv')

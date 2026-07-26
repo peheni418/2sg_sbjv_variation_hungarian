@@ -19,28 +19,12 @@ fit1 = readRDS(here('fit', 'fit1.rds'))
 
 # -- setup -- #
 
-pair_order = c('back_cell', 'front_cell', 'back_form', 'front_form')
 pair_labels = c(
   'back_cell'  = 'várjad/várd',
   'back_form'  = 'várjad/várja',
   'front_cell' = 'kérjed/kérd',
   'front_form' = 'kérjed/kéri'
 )
-
-
-# correct target trials only; same filter as fit.R
-d = d |>
-  filter(complete) |>
-  filter(
-    stim_type != 'type_distractor',
-    !exclude_bad_participant,
-    !exclude_slow,
-    !(key_resp_5.keys == 'f' & stim_type == 'type_target')
-  ) |>
-  mutate(
-    pair_type = factor(pair_type, levels = pair_order),
-    pair = paste(primeHeni, targetHeni, sep = ' → ')
-  )
 
 # -- pair averages -- #
 
@@ -49,7 +33,7 @@ pair_avg = d |>
   filter(!is.na(pair_type)) |>
   summarise(
     mean_rt = mean(key_resp_5.rt, na.rm = TRUE),
-    .by = c(pair, pair_type)
+    .by = c(pair_type,item)
   )
 
 write_csv(pair_avg, here('dat', 'pair_avg.csv'))
@@ -105,10 +89,11 @@ p3 = plot_model(fit1, type = 'pred', terms = 'pair_type') +
     x = 'condition',
     y = 'RT (s)'
   ) +
-  annotate('segment', x = 1, xend = 3, y = .925, yend = .925) +
+  # brackets assume alphabetical pair_type order: back_cell, back_form, front_cell, front_form
+  annotate('segment', x = 1, xend = 2, y = .925, yend = .925) +
   annotate('segment', x = 1, xend = 1, y = .925, yend = .920) +
-  annotate('segment', x = 3, xend = 3, y = .925, yend = .920) +
-  annotate('text',    x = 2,           y = .930, label = '**', size = 5) +
+  annotate('segment', x = 2, xend = 2, y = .925, yend = .920) +
+  annotate('text',    x = 1.5,         y = .930, label = '**', size = 5) +
   annotate('segment', x = 1, xend = 4, y = .950, yend = .950) +
   annotate('segment', x = 1, xend = 1, y = .950, yend = .945) +
   annotate('segment', x = 4, xend = 4, y = .950, yend = .945) +
@@ -123,15 +108,25 @@ fit1 |>
   filter(effect == 'fixed') |> 
   select(term,estimate,std.error,conf.low,conf.high,p.value) |> 
   mutate_if(is.double, ~ round(.,3)) |> 
-  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','Sheet1')
+  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_old_model')
 
 # emmeans
 
-p4 = emmeans::emmeans(fit1, ~ pair_type) |> 
+emm1 = emmeans::emmeans(fit1, ~ pair_type)
+
+contrasts1 = emm1 |>
+  emmeans::contrast(method = 'pairwise') |>
+  summary(infer = TRUE, type = 'response') |>
+  as.data.frame() |>
+  as_tibble()
+
+contrasts1
+  
+p4 = emm1 |> 
   plot(comparisons = TRUE) +
   geom_vline(xintercept = 0, linetype = "dashed") +  # only if on response scale
   theme_bw() +
-  scale_y_discrete(labels = pair_labels, name = 'pair type')
+  scale_y_discrete(name = 'pair type')
 
 ggsave(here('viz', 'plot_model_contrasts_25.png'), p4,
        width = 6, height = 4, dpi = 900)

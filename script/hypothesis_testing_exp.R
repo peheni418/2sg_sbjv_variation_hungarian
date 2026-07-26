@@ -23,15 +23,7 @@ d = read_csv(here('dat', 'clean_data_filtered.csv'))
 
 # correct target trials only; same filter as fit.R / viz.R
 d = d |>
-  filter(
-    stim_type != 'type_distractor',
-    !exclude_bad_participant,
-    !exclude_slow,
-    !(key_resp_5.keys == 'f' & stim_type == 'type_target')
-  ) |>
   mutate(
-    item = primeHeni,
-    rt = key_resp_5.rt,
     condition = pair_type |>
       fct_relevel('back_cell', 'front_cell', 'back_form', 'front_form')
   )
@@ -97,7 +89,7 @@ simulateResiduals(h3, plot = TRUE)
 # -- model selection -- #
 
 # H1 wins on AIC and BIC
-plot(compare_performance(h0, h1, h2, h3, metrics = 'common'))
+compare_performance(h0, h1, h2, h3, metrics = 'common')
 
 test_performance(h0, h1) # H1 better than null
 test_bf(h0, h1)          # H1 ~32x better than H0
@@ -114,11 +106,18 @@ bf2 = test_bf(h0, h1)
 bf3 = test_bf(h2, h1)
 bf4 = test_bf(h3, h1)
 
-bfs       = tibble(BF = as.double(c(bf2$BF[2], '', bf3$BF[2], bf4$BF[2])))
+bfs       = tibble(log_BF = as.double(c(log(bf2$BF[2]), '', log(bf3$BF[2]), log(bf4$BF[2]))))
 bf_names  = tibble(BF_comparison = c('H1 vs H0', '', 'H1 vs H2', 'H1 vs H3'))
-t1 = bind_cols(t1, bf_names, bfs)
+t1b = bind_cols(t1, bf_names, bfs)
 
-t1 |>
-  select(Name, AIC, BIC, R2_marginal, BF_comparison, BF) |>
-  knitr::kable(digits = 3) |> 
-  write_lines('exp_hypothesis_testing.txt')
+t1b |>
+  select(Name, AIC, BIC, R2_marginal, BF_comparison, log_BF) |>
+  mutate_if(is.double, ~ round(., 3)) |> 
+  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_selection')
+
+h1 |> 
+  broom.mixed::tidy(conf.int = T) |> 
+  filter(effect == 'fixed') |> 
+  select(term,estimate,std.error,conf.low,conf.high) |> 
+  mutate_if(is.double, ~ round(.,3)) |> 
+  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_best_model')

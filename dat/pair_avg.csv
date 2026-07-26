@@ -1,97 +1,97 @@
-pair,pair_type,mean_rt
-használjad → használd,back_cell,0.7352545454545455
-rendezzed → rendezi,front_form,0.7804083333333334
-magasztaljad → magasztalja,back_form,0.9049583333333333
-faragjad → faragja,back_form,0.681396
-kívánjad → kívánja,back_form,0.893916666625
-okozzad → okozza,back_form,0.7584291666666667
-jutalmazzad → jutalmazd,back_cell,0.81637200004
-kapjad → kapd,back_cell,0.7936041666666667
-magasztaljad → magasztald,back_cell,0.71534399996
-kérjed → kéri,front_form,0.8081708333333333
-tiporjad → tiporja,front_form,0.777012
-skandáljad → skandálja,back_form,0.9485956522173913
-gyűlöljed → gyűlöld,front_cell,0.831704761904762
-gyűlöljed → gyűlöli,front_form,0.7945043477826087
-kérdezzed → kérdezi,front_form,0.7993625
-definiáljad → definiálja,back_form,0.960291666625
-nyeljed → nyeli,front_form,0.8861416666666667
-űzzed → űzd,front_cell,0.640568
-nyeljed → nyeld,front_cell,0.674732
-kezeljed → kezeli,front_form,0.8428666666666667
-bámuljad → bámulja,back_form,0.8530125
-hunyjad → hunyd,back_cell,0.7735083333333334
-nyerjed → nyerd,front_cell,0.70951199996
-szűrjed → szűrd,front_cell,0.864940909090909
-nyerjed → nyeri,front_form,0.7683
-nyomjad → nyomja,back_form,0.736032
-engedjed → engedi,front_form,0.8064791666666666
-mérlegeljed → mérlegeld,front_cell,0.9826916666666666
-rójad → ródd,back_cell,0.8274863636363636
-hagyjad → hagyd,back_cell,0.6955954545454546
-keresgéljed → keresgéli,front_form,0.93725
-határozzad → határozza,back_form,0.9373833333333333
-skandáljad → skandáld,back_cell,0.8796083332916667
-szűrjed → szűri,front_form,0.685284
-kívánjad → kívánd,back_cell,0.760532
-műveljed → műveli,front_form,0.6640208333333333
-mérlegeljed → mérlegeli,front_form,0.9706625
-számoljad → számolja,back_form,0.696508
-engedjed → engedd,front_cell,0.8257173913043478
-hunyjad → hunyja,back_form,0.7924208333333334
-jelezzed → jelzi,front_form,0.8369250000416667
-kezdjed → kezdi,front_form,0.6513565217391304
-próbáljad → próbálja,back_form,0.8489875000416667
-okozzad → okozd,back_cell,0.831825
-csomagoljad → csomagold,back_cell,0.8758391304782609
-kiabáljad → kiabáld,front_cell,0.8155291667083333
-közöljed → közli,front_form,0.7281208333333333
-alkalmazzad → alkalmazd,back_cell,0.7262291666666667
-jutalmazzad → jutalmazza,back_form,0.9483291666666667
-fogjad → fogd,back_cell,0.7029799999999999
-rendezzed → rendezd,front_cell,0.859004761952381
-kritizáljad → kritizálja,back_form,0.73458
-nyergeljed → nyergeld,front_cell,0.782696
-fogjad → fogja,back_form,0.693948
-tudjad → tudd,back_cell,0.8145347826521739
-kezdjed → kezdd,front_cell,0.6654666666666667
-rázzad → rázd,back_cell,0.6938782608695653
-kezeljed → kezeld,front_cell,0.6864333333333333
-tűrjed → tűrd,front_cell,0.8196173913478261
-műveljed → műveld,front_cell,0.726144
-tereljed → tereld,front_cell,0.759675
-tanácsoljad → tanácsold,back_cell,0.7498416666666666
-kérjed → kérd,front_cell,0.711792
-érjed → éri,front_form,0.9604782608695652
-kérdezzed → kérdezd,front_cell,0.6912958332916667
-rójad → rója,back_form,0.93529
-kalapáljad → kalapálja,back_form,0.9786142857142858
-keresgéljed → keresgéld,front_cell,1.0369608695652175
-definiáljad → definiáld,back_cell,0.7133695652173913
-kalapáljad → kalapáld,back_cell,0.770948
-tudjad → tudja,back_form,0.7848541666666666
-tereljed → tereli,front_form,0.9654142857142858
-hagyjad → hagyja,back_form,0.8179083333333333
-kapjad → kapja,back_form,0.65625
-jelezzed → jelezd,front_cell,0.656108
-rázzad → rázza,back_form,0.6993318181363636
-számoljad → számold,back_cell,0.7075565216956522
-érezzed → érezd,front_cell,0.6515
-alkalmazzad → alkalmazza,back_form,0.8947181818181817
-faragjad → faragd,back_cell,0.73716
-határozzad → határozd,back_cell,0.71713600004
-próbáljad → próbáld,back_cell,0.6697874999583333
-kiabáljad → kiabálja,front_form,0.791325
-tűrjed → tűri,front_form,0.7389478260869565
-érjed → érd,front_cell,0.8531090909090909
-csomagoljad → csomagolja,back_form,0.811554166625
-tanácsoljad → tanácsolja,back_form,0.8654958333333334
-használjad → használja,back_form,0.9606739130434783
-tiporjad → tipord,front_cell,0.8067541666666667
-kritizáljad → kritizáld,back_cell,0.7746086956086956
-bámuljad → bámuld,back_cell,0.66813999996
-nyomjad → nyomd,back_cell,0.6472208333333334
-űzzed → űzi,front_form,0.9382375
-nyergeljed → nyergeli,front_form,0.9126409090909091
-közöljed → közöld,front_cell,0.6542041666666667
-érezzed → érzi,front_form,0.7359043478260869
+pair_type,item,mean_rt
+back_cell,használjad,0.7352545454545455
+front_form,rendezzed,0.7804083333333334
+back_form,magasztaljad,0.9049583333333333
+back_form,faragjad,0.681396
+back_form,kívánjad,0.893916666625
+back_form,okozzad,0.7584291666666667
+back_cell,jutalmazzad,0.81637200004
+back_cell,kapjad,0.7936041666666667
+back_cell,magasztaljad,0.71534399996
+front_form,kérjed,0.8081708333333333
+front_form,tiporjad,0.777012
+back_form,skandáljad,0.9485956522173913
+front_cell,gyűlöljed,0.831704761904762
+front_form,gyűlöljed,0.7945043477826087
+front_form,kérdezzed,0.7993625
+back_form,definiáljad,0.960291666625
+front_form,nyeljed,0.8861416666666667
+front_cell,űzzed,0.640568
+front_cell,nyeljed,0.674732
+front_form,kezeljed,0.8428666666666667
+back_form,bámuljad,0.8530125
+back_cell,hunyjad,0.7735083333333334
+front_cell,nyerjed,0.70951199996
+front_cell,szűrjed,0.864940909090909
+front_form,nyerjed,0.7683
+back_form,nyomjad,0.736032
+front_form,engedjed,0.8064791666666666
+front_cell,mérlegeljed,0.9826916666666666
+back_cell,rójad,0.8274863636363636
+back_cell,hagyjad,0.6955954545454546
+front_form,keresgéljed,0.93725
+back_form,határozzad,0.9373833333333333
+back_cell,skandáljad,0.8796083332916667
+front_form,szűrjed,0.685284
+back_cell,kívánjad,0.760532
+front_form,műveljed,0.6640208333333333
+front_form,mérlegeljed,0.9706625
+back_form,számoljad,0.696508
+front_cell,engedjed,0.8257173913043478
+back_form,hunyjad,0.7924208333333334
+front_form,jelezzed,0.8369250000416667
+front_form,kezdjed,0.6513565217391304
+back_form,próbáljad,0.8489875000416667
+back_cell,okozzad,0.831825
+back_cell,csomagoljad,0.8758391304782609
+front_cell,kiabáljad,0.8155291667083333
+front_form,közöljed,0.7281208333333333
+back_cell,alkalmazzad,0.7262291666666667
+back_form,jutalmazzad,0.9483291666666667
+back_cell,fogjad,0.7029799999999999
+front_cell,rendezzed,0.859004761952381
+back_form,kritizáljad,0.73458
+front_cell,nyergeljed,0.782696
+back_form,fogjad,0.693948
+back_cell,tudjad,0.8145347826521739
+front_cell,kezdjed,0.6654666666666667
+back_cell,rázzad,0.6938782608695653
+front_cell,kezeljed,0.6864333333333333
+front_cell,tűrjed,0.8196173913478261
+front_cell,műveljed,0.726144
+front_cell,tereljed,0.759675
+back_cell,tanácsoljad,0.7498416666666666
+front_cell,kérjed,0.711792
+front_form,érjed,0.9604782608695652
+front_cell,kérdezzed,0.6912958332916667
+back_form,rójad,0.93529
+back_form,kalapáljad,0.9786142857142858
+front_cell,keresgéljed,1.0369608695652175
+back_cell,definiáljad,0.7133695652173913
+back_cell,kalapáljad,0.770948
+back_form,tudjad,0.7848541666666666
+front_form,tereljed,0.9654142857142858
+back_form,hagyjad,0.8179083333333333
+back_form,kapjad,0.65625
+front_cell,jelezzed,0.656108
+back_form,rázzad,0.6993318181363636
+back_cell,számoljad,0.7075565216956522
+front_cell,érezzed,0.6515
+back_form,alkalmazzad,0.8947181818181817
+back_cell,faragjad,0.73716
+back_cell,határozzad,0.71713600004
+back_cell,próbáljad,0.6697874999583333
+front_form,kiabáljad,0.791325
+front_form,tűrjed,0.7389478260869565
+front_cell,érjed,0.8531090909090909
+back_form,csomagoljad,0.811554166625
+back_form,tanácsoljad,0.8654958333333334
+back_form,használjad,0.9606739130434783
+front_cell,tiporjad,0.8067541666666667
+back_cell,kritizáljad,0.7746086956086956
+back_cell,bámuljad,0.66813999996
+back_cell,nyomjad,0.6472208333333334
+front_form,űzzed,0.9382375
+front_form,nyergeljed,0.9126409090909091
+front_cell,közöljed,0.6542041666666667
+front_form,érezzed,0.7359043478260869
