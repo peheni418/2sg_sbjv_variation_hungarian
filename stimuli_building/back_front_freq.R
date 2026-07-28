@@ -1,10 +1,10 @@
 library(here)
 library(tidyverse)
+library(dplyr)
 
 
-forms <- read_tsv(here('stimuli_building', '2sg.sbjv - forms.tsv'))
+forms <- read_tsv(here('dat', 'corpus_short_long_pairs_wide.tsv'))
 stimuli <- read_csv(here('stimuli_building', 'stimuli_psychopy.csv'))
-
 
 
 # 2) make lookup table from forms (keep same col names)
@@ -21,5 +21,9 @@ out = stimuli |>
   left_join(forms_lookup, by = "lemma") |>
   select(lemma, llfpm10, stem_harmony)
 
-# 4) write result
-write_csv(out, here("stimuli_building", "stimuli_lemma_freq.csv"))
+# 4) mean freq
+freq_harmony <- out |>
+  group_by(stem_harmony) |>
+  summarise(mean_llfpm10 = mean(llfpm10, na.rm = TRUE))
+
+print(freq_harmony)
