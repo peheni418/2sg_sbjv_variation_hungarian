@@ -52,6 +52,9 @@ p1 = ggplot(pair_avg, aes(x = pair_type, y = mean_rt)) +
 
 ggsave(here('viz', 'across_pairtypes25.png'), p1,
        width = 6, height = 4, dpi = 900)
+ggsave(here('viz', 'across_pairtypes25.pdf'), p1,
+       width = 6, height = 4)
+
 
 # -- participant averages -- #
 

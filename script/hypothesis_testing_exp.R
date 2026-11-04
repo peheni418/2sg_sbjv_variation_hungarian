@@ -12,6 +12,8 @@ library(glmmTMB)
 library(performance)
 library(sjPlot)
 library(DHARMa)
+library(emmeans)
+library(patchwork)
 
 set.seed(1337)
 
@@ -70,7 +72,8 @@ h3 = glmmTMB(rt ~ condition_h3 + (1|participant) + (1|item), data = d, family = 
 
 # -- diagnostics -- #
 
-# overdispersion ok
+# overdispersion detected: ratio ~1.39, p < .001, in all four models
+# (this comment previously said "ok" -- it wasn't; matches the paper's text)
 check_overdispersion(h1)
 check_overdispersion(h2)
 check_overdispersion(h3)
@@ -110,14 +113,124 @@ bfs       = tibble(log_BF = as.double(c(log(bf2$BF[2]), '', log(bf3$BF[2]), log(
 bf_names  = tibble(BF_comparison = c('H1 vs H0', '', 'H1 vs H2', 'H1 vs H3'))
 t1b = bind_cols(t1, bf_names, bfs)
 
-t1b |>
-  select(Name, AIC, BIC, R2_marginal, BF_comparison, log_BF) |>
-  mutate_if(is.double, ~ round(., 3)) |> 
-  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_selection')
+# t1b |>
+#   select(Name, AIC, BIC, R2_marginal, BF_comparison, log_BF) |>
+#   mutate_if(is.double, ~ round(., 3)) |> 
+#   googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_selection')
 
-h1 |> 
-  broom.mixed::tidy(conf.int = T) |> 
-  filter(effect == 'fixed') |> 
-  select(term,estimate,std.error,conf.low,conf.high) |> 
-  mutate_if(is.double, ~ round(.,3)) |> 
-  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_best_model')
+# h1 |> 
+#   broom.mixed::tidy(conf.int = T) |> 
+#   filter(effect == 'fixed') |> 
+#   select(term,estimate,std.error,conf.low,conf.high) |> 
+#   mutate_if(is.double, ~ round(.,3)) |> 
+#   googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_best_model')
+
+emmeans(h1, 'condition_h1')
+
+# -- emmeans plot for the best model (H1) -- #
+
+# `comparison` isn't an emmeans() argument (it's `comparisons`, and it belongs to
+# plot.emmGrid, not emmeans() itself) -- that's why the earlier attempt had no
+# effect. The right way to get comparison arrows: build the emmGrid first, then
+# call plot(..., comparisons = TRUE, plotit = FALSE) to pull out the arrow
+# endpoints (lcmpl/rcmpl) as data, which we then plot ourselves in house style.
+# A comparison arrow is NOT a second CI: it's calibrated so that two groups'
+# arrows overlap iff their difference is non-significant at `alpha` (default
+# .05, Tukey-adjusted) -- so it's a more honest significance cue than eyeballing
+# whether two plain 95% CIs overlap, which is what the first version of this
+# plot did and which is why the two intervals looked like they overlapped
+# despite a p = 2.47e-5 difference.
+emm1_grid = emmeans(h1, 'condition_h1', type = 'response')
+
+emm1 = plot(emm1_grid, comparisons = TRUE, horizontal = FALSE, plotit = FALSE) |>
+  as.data.frame() |>
+  mutate(
+    condition_h1 = factor(recode(condition_h1, cell = 'same-cell', form = 'cross-cell'),
+                           levels = c('same-cell', 'cross-cell')),
+    x_num = as.numeric(condition_h1),
+    emmean_ms = the.emmean * 1000,
+    LCL_ms = asymp.LCL * 1000,
+    UCL_ms = asymp.UCL * 1000,
+    lcmpl_ms = lcmpl * 1000,  # left comparison-arrow endpoint (NA unless this group is the higher one)
+    rcmpl_ms = rcmpl * 1000   # right/upper comparison-arrow endpoint (NA unless this group is the lower one)
+  )
+
+p_exp = ggplot(emm1, aes(x = condition_h1)) +
+  geom_linerange(aes(ymin = LCL_ms, ymax = UCL_ms), colour = 'grey70', linewidth = 1) +
+  geom_point(aes(y = emmean_ms), size = 2.5) +
+  # one arrow per group: whichever of lcmpl/rcmpl is non-NA for that row
+  geom_segment(
+    aes(x = x_num + .12, xend = x_num + .12, y = emmean_ms, yend = rcmpl_ms),
+    na.rm = TRUE, arrow = arrow(length = unit(.12, 'cm')), linewidth = .6
+  ) +
+  geom_segment(
+    aes(x = x_num + .12, xend = x_num + .12, y = emmean_ms, yend = lcmpl_ms),
+    na.rm = TRUE, arrow = arrow(length = unit(.12, 'cm')), linewidth = .6
+  ) +
+  theme_bw() +
+  labs(x = 'target relation to prime', y = 'predicted RT (ms)')
+
+ggsave(here('viz', 'exp_h1_emmeans.png'), p_exp, dpi = 900, width = 3.8, height = 3.8)
+ggsave('~/Documents/latex/sbjv/figures/exp_est.pdf', p_exp, width = 3.8, height = 3.8)
+
+# -- raw-data plot, all four conditions, with the H1 contrast marked -- #
+
+# the predicted-means plot above shows a credible difference (p = 2.47e-5,
+# estimate 0.075, 95% CI [0.040, 0.110]), but its two intervals visibly
+# overlap -- that's an artefact of comparing marginal CIs naively rather than
+# the model's within-participant/within-item contrast. this plot shows the
+# actual trial-level RTs instead, so the reader can see how much the raw
+# distributions overlap even though the aggregate difference is real.
+
+pair_labels = c(
+  'back_cell'  = 'várjad/várd',
+  'front_cell' = 'kérjed/kérd',
+  'back_form'  = 'várjad/várja',
+  'front_form' = 'kérjed/kéri'
+)
+
+# display is capped at 2200ms (49 of 2275 points, 2.2%, fall above this and
+# are not shown); the model and all reported statistics use the full data.
+#
+# the annotation lives in its own strip, patchworked on top of the main panel,
+# rather than sharing the main panel's coordinate space. earlier versions tried
+# to fit the bracket inside the main panel (by expanding ylim with headroom, or
+# by disabling clipping) -- both made it look like the panel extends past where
+# the real data stop, i.e. like there are no observations up near the display
+# cap, which is the opposite of what's true: the main panel below is left
+# exactly as the data actually look, ylim hard-capped at 2200 with no added
+# headroom, and the bracket is composited in a separate, unrelated y-range above it
+d_plot = d |>
+  filter(!is.na(pair_type)) |>
+  mutate(
+    pair_type = factor(pair_type, levels = c('back_cell','front_cell','back_form','front_form')),
+    rt_ms = rt * 1000
+  )
+
+p_main = ggplot(d_plot, aes(x = pair_type, y = rt_ms)) +
+  geom_violin(fill = 'grey90', colour = 'grey50') +
+  geom_boxplot(width = .15, outlier.shape = NA, fill = 'white') +
+  geom_jitter(width = .08, alpha = .15, size = .8) +
+  scale_x_discrete(labels = pair_labels) +
+  coord_cartesian(ylim = c(0, 2200)) +
+  theme_bw() +
+  labs(x = 'condition (prime > target)', y = 'RT (ms)')
+
+# bracket spans the two H1 groups: {back_cell,front_cell} vs {back_form,front_form}
+# *** reflects the H1 contrast p-value (2.47e-5); this is the only contrast
+# the paper actually tests and reports -- not a post-hoc comparison across
+# all six raw condition pairs. same x categories as p_main, so patchwork aligns
+# the bracket's x positions with the violins below it
+p_strip = ggplot(d_plot, aes(x = pair_type)) +
+  annotate('segment', x = 1.5, xend = 1.5, y = 1, yend = .55) +
+  annotate('segment', x = 3.5, xend = 3.5, y = 1, yend = .55) +
+  annotate('segment', x = 1.5, xend = 3.5, y = 1, yend = 1) +
+  annotate('text', x = 2.5, y = 1.3, label = 'same-cell vs. cross-cell: ***') +
+  scale_x_discrete(labels = pair_labels) +
+  coord_cartesian(ylim = c(0, 1.6)) +
+  theme_void()
+
+p_raw = p_strip / p_main + plot_layout(heights = c(1, 6))
+
+ggsave(here('viz', 'exp_raw.png'), p_raw, dpi = 900, width = 6, height = 4.8)
+ggsave('~/Documents/latex/sbjv/figures/exp_raw.pdf', p_raw, width = 6, height = 4.8)
