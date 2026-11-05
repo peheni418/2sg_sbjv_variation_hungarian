@@ -48,7 +48,7 @@ front_cell,kiabáljad,0.8155291667083333
 front_form,közöljed,0.7281208333333333
 back_cell,alkalmazzad,0.7262291666666667
 back_form,jutalmazzad,0.9483291666666667
-back_cell,fogjad,0.7029799999999999
+back_cell,fogjad,0.70298
 front_cell,rendezzed,0.859004761952381
 back_form,kritizáljad,0.73458
 front_cell,nyergeljed,0.782696
@@ -70,7 +70,7 @@ front_cell,keresgéljed,1.0369608695652175
 back_cell,definiáljad,0.7133695652173913
 back_cell,kalapáljad,0.770948
 back_form,tudjad,0.7848541666666666
-front_form,tereljed,0.9654142857142858
+front_form,tereljed,0.9654142857142857
 back_form,hagyjad,0.8179083333333333
 back_form,kapjad,0.65625
 front_cell,jelezzed,0.656108
@@ -78,7 +78,7 @@ back_form,rázzad,0.6993318181363636
 back_cell,számoljad,0.7075565216956522
 front_cell,érezzed,0.6515
 back_form,alkalmazzad,0.8947181818181817
-back_cell,faragjad,0.73716
+back_cell,faragjad,0.7371599999999999
 back_cell,határozzad,0.71713600004
 back_cell,próbáljad,0.6697874999583333
 front_form,kiabáljad,0.791325
@@ -91,7 +91,7 @@ front_cell,tiporjad,0.8067541666666667
 back_cell,kritizáljad,0.7746086956086956
 back_cell,bámuljad,0.66813999996
 back_cell,nyomjad,0.6472208333333334
-front_form,űzzed,0.9382375
+front_form,űzzed,0.9382375000000001
 front_form,nyergeljed,0.9126409090909091
-front_cell,közöljed,0.6542041666666667
 front_form,érezzed,0.7359043478260869
+front_cell,közöljed,0.6542041666666667

@@ -1,0 +1,4 @@
+init.started,init.stopped,participant,session,date,expName,psychopyVersion,OS,frameRate,instructions.started,instructions.stopped,key_resp_2.keys,key_resp_2.rt,key_resp_2.duration,prac_fix.started,prac_fix.stopped,prac_prime.started,prac_prime.stopped,prac_fix2.started,prac_fix2.stopped,prac_target.started,prac_target.stopped,key_resp.keys,key_resp.rt,key_resp.duration,prac.thisRepN,prac.thisTrialN,prac.thisN,prac.thisIndex,prac.ran,primeHeni_prax,targetHeni_prax
+4e-4,8e-4,participant10,001,2026-05-10_15h20.07.554,priming,2025.2.4,Win32,59.88023952,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,participant10,001,2026-05-10_15h20.07.554,priming,2025.2.4,Win32,59.88023952,8e-4,4.0957,FALSE,4.017,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA
+NA,NA,participant10,001,2026-05-10_15h20.07.554,priming,2025.2.4,Win32,59.88023952,NA,NA,NA,NA,NA,4.1225,5.298,5.2984,6.4934,6.4938,7.6968,7.698,12.413,FALSE,4.6876,NA,0,0,0,0,1,kis,kiskacsa

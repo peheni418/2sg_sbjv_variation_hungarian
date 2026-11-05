@@ -2,3 +2,11 @@
 .Rhistory
 .Rproj.user
 .RData
+.DS_Store
+
+# one-off participant-id anonymisation: the script derives the mapping from
+# live repo state and never needs to run twice, and the mapping it writes is
+# the only place old (identifying) and new ids are linked -- neither should
+# ever be committed
+script/anonymise_ids.R
+id_mapping.csv

@@ -10,20 +10,47 @@ library(tidyverse)
 
 set.seed(1337)
 
-# NB: one participant submitted their neptun code (UMIZ4M) as the id.
-# rename it to a 6-digit number in raw_data/ before running.
+# ids were anonymised (script/anonymise_ids.R, one-off, gitignored): raw_data
+# filenames and the internal `participant` column both use participant1..N
+# now, in place of the original neptun codes / psychopy-assigned ids.
 
 # -- read -- #
 
-# one csv per participant; the filename starts with a 6-digit id
+# one csv per participant; the filename is participantN_priming.csv.
+# abandoned sessions can be so short that psychopy never got to writing some
+# columns at all (e.g. key_resp_5.keys), or wrote one that's entirely blank,
+# which read.csv() then infers as logical instead of character -- either way
+# bind_rows() across files fails on the schema mismatch unless every file is
+# normalised to the same five columns, with the same types, before binding
+needed_chr = c('key_resp_5.keys', 'primeHeni', 'targetHeni', 'stim_type')
+
+# participant3, participant22, participant41, participant42: pilot/test runs
+# by the research team (originally named 0420, 420, lanyok, proba in
+# raw_data, before ids were anonymised), not study participants. the old
+# filenames didn't match the strict 6-digit pattern this glob used to use, so
+# they were never read in; excluded explicitly now so that generalising the
+# pattern for the new participantN names doesn't silently pull them in and
+# change clean_data_unfiltered.csv's reported totals
+test_session_ids = c('participant3', 'participant22', 'participant41', 'participant42')
+
 d = list.files(
     here('raw_data'),
-    pattern = '^[0-9]{6}_priming\\.csv$',
+    pattern = '^participant[0-9]+_priming\\.csv$',
     full.names = TRUE
   ) |>
+  discard(\(x) str_extract(basename(x), '^participant[0-9]+') %in% test_session_ids) |>
   map_df(\(x) {
-    read.csv(x) |>
-      mutate(participant = str_extract(basename(x), '^[0-9]{6}'))
+    raw = read.csv(x)
+    for (col in c(needed_chr, 'key_resp_5.rt')) {
+      if (!col %in% names(raw)) raw[[col]] = NA
+    }
+    raw |>
+      mutate(
+        participant = str_extract(basename(x), '^participant[0-9]+'),
+        across(all_of(needed_chr), as.character),
+        key_resp_5.rt = as.numeric(key_resp_5.rt)
+      ) |>
+      select(participant, all_of(needed_chr), key_resp_5.rt)
   })
 
 d = d |>
@@ -72,13 +99,14 @@ d = d |>
 # from first instructions.started to last end_2.stopped
 completion_time = list.files(
   here('raw_data'),
-  pattern = '^[0-9]{6}_priming\\.csv$',
+  pattern = '^participant[0-9]+_priming\\.csv$',
   full.names = TRUE
 ) |>
+  discard(\(x) str_extract(basename(x), '^participant[0-9]+') %in% test_session_ids) |>
   map_df(\(x) {
     tmp = read.csv(x)
     tibble(
-      participant = str_extract(basename(x), '^[0-9]{6}'),
+      participant = str_extract(basename(x), '^participant[0-9]+'),
       completion_time_sec =
         max(tmp$end_2.stopped, na.rm = TRUE) -
         min(tmp$instructions.started, na.rm = TRUE)
@@ -89,8 +117,14 @@ completion_time = list.files(
 d = d |>
   left_join(completion_time, by = 'participant')
 
-# print median completion time (seconds) to console
-cat('Median completion time (sec):', median(completion_time$completion_time_sec, na.rm = TRUE), '\n')
+# print median completion time (seconds) to console. restricted to finite
+# values: a session that never reached the end screen has end_2.stopped
+# entirely NA, so max(..., na.rm = TRUE) returns -Inf -- not a real
+# completion time, and broadening the file glob above (for the id
+# anonymisation) now pulls a few such abandoned sessions into this list
+# that weren't matched before
+finite_times = completion_time$completion_time_sec[is.finite(completion_time$completion_time_sec)]
+cat('Median completion time (sec):', median(finite_times, na.rm = TRUE), '\n')
 
 # -- harmony class -- #
 
