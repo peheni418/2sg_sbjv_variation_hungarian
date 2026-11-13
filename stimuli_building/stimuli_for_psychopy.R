@@ -197,8 +197,8 @@ colnames(stimuli_priming_2026) <- c("col1", "col2", "col3", "col4")
 #   B) prime=long, target=3sg_def,    type_target
 #   C) prime=long, target=scrambled,  type_distractor
 stimuli_psychopy <- data.frame(
-  primeHeni = character(),
-  targetHeni = character(),
+  primeH = character(),
+  targetH = character(),
   stim_type = character(),
   stringsAsFactors = FALSE
 )
@@ -206,22 +206,22 @@ stimuli_psychopy <- data.frame(
 # Expand row-by-row into the three planned pair types.
 for (i in 1:nrow(stimuli_priming_2026)) {
   stimuli_psychopy <- rbind(stimuli_psychopy, data.frame(
-    primeHeni = stimuli_priming_2026$col2[i],
-    targetHeni = stimuli_priming_2026$col1[i],
+    primeH = stimuli_priming_2026$col2[i],
+    targetH = stimuli_priming_2026$col1[i],
     stim_type = "type_target",
     stringsAsFactors = FALSE
   ))
   
   stimuli_psychopy <- rbind(stimuli_psychopy, data.frame(
-    primeHeni = stimuli_priming_2026$col2[i],
-    targetHeni = stimuli_priming_2026$col3[i],
+    primeH = stimuli_priming_2026$col2[i],
+    targetH = stimuli_priming_2026$col3[i],
     stim_type = "type_target",
     stringsAsFactors = FALSE
   ))
   
   stimuli_psychopy <- rbind(stimuli_psychopy, data.frame(
-    primeHeni = stimuli_priming_2026$col2[i],
-    targetHeni = stimuli_priming_2026$col4[i],
+    primeH = stimuli_priming_2026$col2[i],
+    targetH = stimuli_priming_2026$col4[i],
     stim_type = "type_distractor",
     stringsAsFactors = FALSE
   ))

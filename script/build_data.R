@@ -22,7 +22,7 @@ set.seed(1337)
 # which read.csv() then infers as logical instead of character -- either way
 # bind_rows() across files fails on the schema mismatch unless every file is
 # normalised to the same five columns, with the same types, before binding
-needed_chr = c('key_resp_5.keys', 'primeHeni', 'targetHeni', 'stim_type')
+needed_chr = c('key_resp_5.keys', 'primeH', 'targetH', 'stim_type')
 
 # participant3, participant22, participant41, participant42: pilot/test runs
 # by the research team (originally named 0420, 420, lanyok, proba in
@@ -54,7 +54,7 @@ d = list.files(
   })
 
 d = d |>
-  select(participant, key_resp_5.keys, key_resp_5.rt, primeHeni, targetHeni, stim_type) |>
+  select(participant, key_resp_5.keys, key_resp_5.rt, primeH, targetH, stim_type) |>
   drop_na()
 
 
@@ -130,16 +130,16 @@ cat('Median completion time (sec):', median(finite_times, na.rm = TRUE), '\n')
 
 # front if target ends in 'i', else back
 d = d |>
-  mutate(harmony_class = if_else(str_ends(targetHeni, 'i'), 'front', 'back'))
+  mutate(harmony_class = if_else(str_ends(targetH, 'i'), 'front', 'back'))
 
 # carry the class to primes that appear paired with a front target
 front_primes = d |>
   filter(harmony_class == 'front') |>
-  pull(primeHeni) |>
+  pull(primeH) |>
   unique()
 
 d = d |>
-  mutate(harmony_class = if_else(primeHeni %in% front_primes, 'front', harmony_class))
+  mutate(harmony_class = if_else(primeH %in% front_primes, 'front', harmony_class))
 
 # -- pair type -- #
 
@@ -148,10 +148,10 @@ d = d |>
   mutate(
     pair_type = case_when(
       stim_type == 'type_distractor'                          ~ NA_character_,
-      harmony_class == 'front' &  str_ends(targetHeni, 'd')   ~ 'front_cell',
-      harmony_class == 'front' & !str_ends(targetHeni, 'd')   ~ 'front_form',
-      harmony_class == 'back'  &  str_ends(targetHeni, 'd')   ~ 'back_cell',
-      harmony_class == 'back'  & !str_ends(targetHeni, 'd')   ~ 'back_form'
+      harmony_class == 'front' &  str_ends(targetH, 'd')   ~ 'front_cell',
+      harmony_class == 'front' & !str_ends(targetH, 'd')   ~ 'front_form',
+      harmony_class == 'back'  &  str_ends(targetH, 'd')   ~ 'back_cell',
+      harmony_class == 'back'  & !str_ends(targetH, 'd')   ~ 'back_form'
     )
   )
 
@@ -171,7 +171,7 @@ d2 = d |>
   ) |>
   mutate(
     rt   = key_resp_5.rt,
-    item = primeHeni
+    item = primeH
   )
 
 # -- write -- #

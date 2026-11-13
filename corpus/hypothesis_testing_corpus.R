@@ -71,17 +71,7 @@ t1b = bind_cols(t1, bf_names, bfs)
 
 # -- best model -- #
 
-t2 = m2 |> 
-  broom.mixed::tidy(conf.int = T) |> 
-  filter(effect == 'fixed') |> 
+t2 = m2 |>
+  broom.mixed::tidy(conf.int = T) |>
+  filter(effect == 'fixed') |>
   select(term,estimate,std.error,conf.low,conf.high)
-
-# -- write -- #
-
-t1b |> 
-  mutate_if(is.double, ~ round(.,3)) |> 
-  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','corpus_selection')
-
-t2 |> 
-  mutate_if(is.double, ~ round(.,3)) |> 
-  googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','corpus_best_model')

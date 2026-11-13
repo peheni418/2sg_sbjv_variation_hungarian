@@ -31,7 +31,6 @@ corpus counts rather than reaction times.
 ├── fit/                saved model objects (.rds)
 ├── viz/                figures (png, 900 dpi)
 ├── stimuli_building/   stimulus construction (separate from analysis)
-├── misc/               notes, preregistration pdf, and other supporting text
 └── LICENSE             MIT
 ```
 
@@ -172,8 +171,8 @@ applied) and includes all trials, flags included, before any exclusion.
 | `participant` | chr | anonymised id (see "Participant ids" above); only the subset with raw_data files appears here, not the full `participant1`..`participant69` range (the demographic file's ids run higher, to accommodate Neptun codes with no raw_data counterpart) |
 | `key_resp_5.keys` | chr | raw key press on the critical trial: `j` (real/familiar word) or `f` (not) |
 | `key_resp_5.rt` | dbl | raw response time in seconds, from psychopy |
-| `primeHeni` | chr | the prime word form shown (named after Henrietta Pokk, who built the stimuli) |
-| `targetHeni` | chr | the target word form shown |
+| `primeH` | chr | the prime word form shown |
+| `targetH` | chr | the target word form shown |
 | `stim_type` | chr | `type_target` (critical trial) or `type_distractor`; only `type_target` rows reach `clean_data_filtered.csv` |
 | `complete` | lgl | did this participant finish all 144 trials |
 | `exclude_slow` | lgl | `key_resp_5.rt > 4` (seconds) |
@@ -183,7 +182,7 @@ applied) and includes all trials, flags included, before any exclusion.
 | `harmony_class` | chr | `back`/`front`, read off the target form (and carried to primes sharing a front target) |
 | `pair_type` | chr | `back_cell`/`back_form`/`front_cell`/`front_form` for target trials, `NA` for distractors -- see "Pair Type Coding" above |
 | `rt` | dbl | `= key_resp_5.rt`; `clean_data_filtered.csv` only |
-| `item` | chr | `= primeHeni`; `clean_data_filtered.csv` only, used as the item-level random intercept group |
+| `item` | chr | `= primeH`; `clean_data_filtered.csv` only, used as the item-level random intercept group |
 
 ## Known issues
 

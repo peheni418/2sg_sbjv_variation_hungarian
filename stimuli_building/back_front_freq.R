@@ -12,11 +12,11 @@ forms_lookup = forms |>
   select(lemma, llfpm10, stem_harmony) |>
   distinct(lemma, .keep_all = TRUE)
 
-# 3) from stimuli primeHeni, cut last 3 chars
+# 3) from stimuli primeH, cut last 3 chars
 #    then join on forms$lemma
 out = stimuli |>
   mutate(
-    lemma = str_sub(primeHeni, 1, -4)   # remove last 3 characters
+    lemma = str_sub(primeH, 1, -4)   # remove last 3 characters
   ) |>
   left_join(forms_lookup, by = "lemma") |>
   select(lemma, llfpm10, stem_harmony)

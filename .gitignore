@@ -3,6 +3,7 @@
 .Rproj.user
 .RData
 .DS_Store
+Rplots.pdf
 
 # one-off participant-id anonymisation: the script derives the mapping from
 # live repo state and never needs to run twice, and the mapping it writes is

@@ -1,4 +1,4 @@
-participant,key_resp_5.keys,key_resp_5.rt,primeHeni,targetHeni,stim_type,complete,exclude_slow,error_rate,exclude_bad_participant,completion_time_sec,harmony_class,pair_type
+participant,key_resp_5.keys,key_resp_5.rt,primeH,targetH,stim_type,complete,exclude_slow,error_rate,exclude_bad_participant,completion_time_sec,harmony_class,pair_type
 participant1,f,1.6132,engedjed,edgedjen,type_distractor,TRUE,FALSE,0.006944444444444455,FALSE,725.1775,front,NA
 participant1,j,1.4574,használjad,használd,type_target,TRUE,FALSE,0.006944444444444455,FALSE,725.1775,back,back_cell
 participant1,j,1.7673,rendezzed,rendezi,type_target,TRUE,FALSE,0.006944444444444455,FALSE,725.1775,front,front_form

@@ -113,18 +113,6 @@ bfs       = tibble(log_BF = as.double(c(log(bf2$BF[2]), '', log(bf3$BF[2]), log(
 bf_names  = tibble(BF_comparison = c('H1 vs H0', '', 'H1 vs H2', 'H1 vs H3'))
 t1b = bind_cols(t1, bf_names, bfs)
 
-# t1b |>
-#   select(Name, AIC, BIC, R2_marginal, BF_comparison, log_BF) |>
-#   mutate_if(is.double, ~ round(., 3)) |> 
-#   googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_selection')
-
-# h1 |> 
-#   broom.mixed::tidy(conf.int = T) |> 
-#   filter(effect == 'fixed') |> 
-#   select(term,estimate,std.error,conf.low,conf.high) |> 
-#   mutate_if(is.double, ~ round(.,3)) |> 
-#   googlesheets4::write_sheet('https://docs.google.com/spreadsheets/d/1dJdRxbHpLN9lmBCqUPf7oKJR93PoIXeg9PcnwyTnxcY/edit?usp=sharing','exp_best_model')
-
 emmeans(h1, 'condition_h1')
 
 # -- emmeans plot for the best model (H1) -- #
@@ -183,10 +171,10 @@ ggsave('~/Documents/latex/sbjv/figures/exp_est.pdf', p_exp, width = 3.8, height 
 # distributions overlap even though the aggregate difference is real.
 
 pair_labels = c(
-  'back_cell'  = 'várjad/várd',
-  'front_cell' = 'kérjed/kérd',
-  'back_form'  = 'várjad/várja',
-  'front_form' = 'kérjed/kéri'
+  'back_cell'  = 'back, same-cell',
+  'front_cell' = 'front, same-cell',
+  'back_form'  = 'back, cross-cell',
+  'front_form' = 'front, cross-cell'
 )
 
 # display is capped at 2200ms (49 of 2275 points, 2.2%, fall above this and
@@ -207,14 +195,27 @@ d_plot = d |>
     rt_ms = rt * 1000
   )
 
-p_main = ggplot(d_plot, aes(x = pair_type, y = rt_ms)) +
-  geom_violin(fill = 'grey90', colour = 'grey50') +
-  geom_boxplot(width = .15, outlier.shape = NA, fill = 'white') +
-  geom_jitter(width = .08, alpha = .15, size = .8) +
-  scale_x_discrete(labels = pair_labels) +
-  coord_cartesian(ylim = c(0, 2200)) +
+# p_main = ggplot(d_plot, aes(x = pair_type, y = rt_ms)) +
+#   geom_violin(fill = 'grey90', colour = 'grey50') +
+#   geom_boxplot(width = .15, outlier.shape = NA, fill = 'white') +
+#   # geom_jitter(width = .08, alpha = .15, size = .8) +
+#   scale_x_discrete(labels = pair_labels) +
+#   coord_cartesian(ylim = c(0, 2200)) +
+#   theme_bw() +
+#   labs(x = 'condition (prime > target)', y = 'RT (ms)')
+
+p_main = d_plot |> 
+  summarise(
+    rt = mean(rt),
+    .by = c(primeH,condition)
+  ) |> 
+  mutate(log_rt = log(rt)) |> 
+  ggplot(aes(condition,log_rt)) +
+  ggthemes::geom_tufteboxplot() +
+  geom_line(aes(group = primeH), alpha = .1) +
   theme_bw() +
-  labs(x = 'condition (prime > target)', y = 'RT (ms)')
+  scale_x_discrete(labels = pair_labels) +
+  labs(x = 'condition (prime > target)', y = 'prime mean RT (ms), logged')
 
 # bracket spans the two H1 groups: {back_cell,front_cell} vs {back_form,front_form}
 # *** reflects the H1 contrast p-value (2.47e-5); this is the only contrast

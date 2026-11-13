@@ -155,7 +155,7 @@ d |>
   theme_bw() +
   geom_histogram() +
   facet_wrap( ~ subj_2nd) +
-  scale_x_continuous(sec.axis = sec_axis(trans = ~ plogis(.), breaks = c(.01,0.1,.5), name = '% várjad/várjál\np(long)'), limits = c(-9,1), name = 'várd/várj > várjad/várjál\nlog(p(long 2sg sbjv)/p(short 2sg sbjv))', breaks = c(-7,-5,-3,-1,0,1))
+  scale_x_continuous(sec.axis = sec_axis(trans = ~ plogis(.), breaks = c(.01,0.1,.5), name = '% long 2sg sbjv\np(long)'), limits = c(-9,1), name = 'short > long\nlog(p(long 2sg sbjv)/p(short 2sg sbjv))', breaks = c(-7,-5,-3,-1,0,1))
 
 ggsave('viz/adjal_manyek_0.png', dpi = 900, width = 4, height = 4)
 
@@ -175,32 +175,32 @@ plot_model(fit3b, 'pred', terms = c('llfpm10_scaled','lemma_length')) +
   scale_colour_grey() +
   scale_fill_grey() +
   xlab('stem frequency\nlog(lemma freq / million), scaled') +
-  ylab('% várjad/várjál\np(long 2sg sbjv)') +
+  ylab('% long 2sg sbjv\np(long)') +
   labs(colour = 'stem length') +
   ggtitle('')
 
 ggsave('viz/adjal_manyek_1.png', dpi = 900, width = 5, height = 4)
 
-# plot_model(fit3c, 'pred', terms = c('stem_harmony','subj_2nd')) + 
-#   theme_minimal() + 
+# plot_model(fit3c, 'pred', terms = c('stem_harmony','subj_2nd')) +
+#   theme_minimal() +
 #   scale_colour_grey() +
 #   scale_fill_grey() +
 #   xlab('log(p(3sg def)/p(3sg indef)), scaled') +
-#   ylab('% várjál\np(long 2sg sbjv)') +
+#   ylab('% long 2sg sbjv\np(long)') +
 #   labs(colour = '2sg sbjv') +
 #   ggtitle('')
-# 
+#
 # ggsave('viz/adjal_manyek_2.png', dpi = 900, width = 4, height = 3)
 
-# plot_model(fit3b, 'pred', terms = c('log_odds_3sg_ind_scaled','subj_2nd','stem_harmony')) + 
-#   theme_minimal() + 
-#   scale_colour_grey(name = 'def/indef', labels = c("várjad/várd", "várjál/várj")) +
+# plot_model(fit3b, 'pred', terms = c('log_odds_3sg_ind_scaled','subj_2nd','stem_harmony')) +
+#   theme_minimal() +
+#   scale_colour_grey(name = 'def/indef', labels = c("same-cell", "cross-cell")) +
 #   scale_fill_grey() +
-#   xlab('vár > várja\nlog(p(3sg def)/p(3sg indef)), scaled') +
-#   ylab('% várjad/várjál\np(long 2sg sbjv)') +
+#   xlab('definiteness preference, scaled\nlog(p(3sg def)/p(3sg indef))') +
+#   ylab('% long 2sg sbjv\np(long)') +
 #   ggtitle('') +
-#   facet_wrap(~facet, labeller = labeller(facet = c("back" = "vár", "front" = "kér")))
-# 
+#   facet_wrap(~facet, labeller = labeller(facet = c("back" = "back", "front" = "front")))
+#
 # ggsave('viz/adjal_manyek_3.png', dpi = 900, width = 6, height = 4)
 
 # -- ggeffects tableau of significant fit3b effects -- #
@@ -228,10 +228,10 @@ y_range = c(0, max(eff_length$conf.high))
 
 p_interaction = plot(eff_interaction, show_data = FALSE) +
   theme_bw() +
-  scale_colour_grey(start = .1, end = .6, labels = c('várjad (def)', 'várjál (indef)')) +
+  scale_colour_grey(start = .1, end = .6, labels = c('definite', 'indefinite')) +
   scale_fill_grey(start = .1, end = .6, guide = 'none') +
   labs(
-    x = 'vár > várja\nlog(p(3sg def)/p(3sg indef)), scaled',
+    x = 'definiteness preference, scaled\nlog(p(3sg def)/p(3sg indef))',
     y = 'p(long 2sg sbjv)',
     colour = '2sg sbjv',
     title = 'definiteness × 2sg sbjv'
