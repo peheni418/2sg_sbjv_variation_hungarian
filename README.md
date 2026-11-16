@@ -2,8 +2,7 @@
 
 This project investigates morphological priming effects in Hungarian: how
 different verb forms affect processing speed and accuracy in a lexical decision
-task. The experiment lives at
-https://gitlab.pavlovia.org/peheni/variation2sg_priming_2026.
+task.
 
 There are two parallel analyses: an experimental priming study (`script/`) and
 a corpus frequency study (`corpus/`) that tests the same predictions on
